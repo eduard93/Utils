@@ -6,6 +6,7 @@ Utils.Installer.CLS
 Utils.Length.CLS
 Utils.Macro.CLS
 Utils.Main.CLS
+Utils.NS.CLS
 Utils.Param.CLS
 Utils.Pattern.CLS
 Utils.Projection.CLS
