@@ -1,2 +1,2 @@
 # Utils
-Vrious code snippets for InterSystems Caché
+Various code snippets for InterSystems Caché
