@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Main">
+<Super>%RegisteredObject</Super>
+<TimeCreated>63463,67450.648369</TimeCreated>
+
+<Property name="A">
+<Type>%String</Type>
+<Aliases>lolol
+olol
+wowow
+wwoowo</Aliases>
+</Property>
+
+<Parameter name="A">
+<Description>
+w ##class(Utils.Main).#A
+works with ##class(%ZEN.proxyObject).%ZENDeserialize(..A)</Description>
+<Expression>##class(%ZEN.proxyObject).%Create(..#B).%Serialize()</Expression>
+</Parameter>
+
+<Parameter name="B">
+<Description>
+works with ##class(%ZEN.proxyObject).%Create(..#B)</Description>
+<Expression>"%ZEN.proxyObject" _ $C(6,6) _ "prop" _ $C(5) _"value" _ $C(6) _ "prop2" _ $C(5) _"value"</Expression>
+</Parameter>
+
+<Method name="Create">
+<Description><![CDATA[
+ Creates namespace, database, default webapplication (csp and REST) with name, well <b>Name</b>.<br>
+ <b>Name</b> - you're strongly encouraged to use only combinations of
+latin alphabet (a-z, A-Z) and number (0-9) characters here.
+<b>WebApps</b> - create webapps. 0 - none, 1 - default csp, 2 - broker, -1 - all<br>
+do ##class(Utils.Main).Create("")]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Name:%String,WebApps:%Integer=0</FormalSpec>
+<Implementation><![CDATA[
+ zn "%SYS"
+ Set LowName = $ZCVT(Name,"L")
+ 
+ //Create directories
+ Set Path = ##class(%File).ManagerDirectory() _ Name
+ Set st = ##class(%File).CreateDirectory(Path)
+ Return:$$$ISERR(st) st
+ Set PathWEB = ##class(%File).NormalizeDirectory(##class(%File).ParentDirectoryName(##class(%File).ManagerDirectory()) _ "CSP") _ Name
+ Set st = ##class(%File).CreateDirectory(PathWEB)
+ Return:$$$ISERR(st) st
+  
+ // Create DataBase File
+ Set st=##Class(SYS.Database).CreateDatabase(Path)
+ Return:$$$ISERR(st) st
+  
+ // Mount database to Cache
+ Set Properties("Directory")=Path
+ Set Properties("MountRequired")=1
+ Set st=##Class(Config.Databases).Create(Name,.Properties)
+ Return:$$$ISERR(st) st
+ Set Properties("MountRequired")=1
+ Set st=##Class(Config.Databases).Modify(Name,.Properties)
+  
+ // Create NameSpace
+ Set nsProperties("Globals") = Name
+ Set nsProperties("Library") = "CACHELIB"
+ Set nsProperties("Routines") = Name
+ Set nsProperties("SysGlobals") = "CACHESYS"
+ Set nsProperties("SysRoutines") = "CACHESYS"
+ Set nsProperties("TempGlobals") = "CACHETEMP"
+ Set st = ##Class(Config.Namespaces).Create(Name,.nsProperties)
+ Return:$$$ISERR(st) st
+  
+ // Create web apps
+ 
+ // default
+ if ((WebApps = 1) || (WebApps = -1)) {
+	 Set cspProperties("AutheEnabled") = 64
+	 Set cspProperties("NameSpace") = Name
+	 Set cspProperties("Path") = PathWEB
+	 Set cspProperties("IsNameSpaceDefault") = 1
+	 Set st = ##Class(Security.Applications).Create("/csp/"_LowName,.cspProperties)
+	 Return:$$$ISERR(st) st
+ }
+ 
+ // broker
+ if ((WebApps = 2) || (WebApps = -1)) {
+	 Set cspProperties("AutheEnabled") = 64
+	 Set cspProperties("NameSpace") = Name
+	 Set cspProperties("DispatchClass") = "REST.Broker"
+	 Set cspProperties("IsNameSpaceDefault") = 0
+	 Set st = ##Class(Security.Applications).Create("/broker/"_LowName,.cspProperties)
+	 Return:$$$ISERR(st) st
+ }
+  
+ zn Name
+ Return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="SQL">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[	&sql(SELECT 135+146)
+]]></Implementation>
+</Method>
+
+<Method name="GitHub">
+<Description>
+https://github.com/brandonhorst/cdev-server</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	zn "%SYS" 
+	
+	s b=##class(SYS.Database).%OpenId($zu(12,"cachelib"))
+	s bk=b.ReadOnly 
+	s b.ReadOnly=0 
+	d b.%Save() 
+	
+	s s="Github_CDEV"
+	s l="/brandonhorst/cdev-server/master/"
+	s jf="json/" 
+	s jn="%CDEV.JSON."
+	s f="base,boolean,list,null,number,object,stream" 
+	s if="includes.inc"
+	s sn="%CDEV.Server"
+	s u="/csp/sys/dev" 
+	
+	d ##class(Security.SSLConfigs).Create(s) 
+	d ##class(Security.Applications).Copy("/csp/sys",u,"CDev REST Application")
+	d ##class(Security.Applications).Get(u,.p) 
+	s p("DispatchClass")=sn 
+	d ##class(Security.Applications).Modify(u,.p) 
+	
+	s r=##class(%Net.HttpRequest).%New()
+	s r.Server="raw.github.com"
+	s r.Https=1
+	s r.SSLConfiguration=s 
+	
+	f i=1:1:$l(f,",") { 
+		s t=$p(f,",",i)
+		s tn=jn_$zcvt($e(t),"U")_$e(t,2,99) 
+		d r.Get(l_jf_t_".cls") 
+		s d=$replace(r.HttpResponse.Data.Read(),$c(10),$c(13,10)) 
+		d ##class(%Compiler.UDL.TextServices).SetTextFromString(,tn,d)
+		d $system.OBJ.Compile(tn,"c-d") 
+	} 
+	d r.Get(l_jf_if) 
+	s i=##class(%Routine).%New(jn_$zcvt($e(if),"U")_$e(if,2,*-3)_$zcvt($e(if,*-2,99),"U")) 
+	d i.CopyFromAndSave(r.HttpResponse.Data)
+	d r.Get(l_$zcvt(sn,"O","URL")_".cls") 
+	s d=$replace(r.HttpResponse.Data.Read(),$c(10),$c(13,10)) 
+	d ##class(%Compiler.UDL.TextServices).SetTextFromString(,sn,d)
+	d $system.OBJ.Compile(sn,"c-d") 
+	s b.ReadOnly=bk 
+	d b.%Save()
+]]></Implementation>
+</Method>
+
+<Method name="LoopLength">
+<Description>
+	do ##class(Utils.Main).LoopLength()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+
+	For K=1:1:100000 {
+		Set Start=$ZH 
+		For I=1:1:100000 { } 
+		//W "Loop took, sec ",$ZH-Start,!
+		set length = $ZH-Start
+		set ^loop(length) =  $i(^loop(length))
+	}
+]]></Implementation>
+</Method>
+
+<Method name="FixedLength">
+<Description>
+w ##class(Utils.Main).FixedLength(123,5)</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>number,length</FormalSpec>
+<Implementation><![CDATA[$tr($j(number,length)," ","0")
+]]></Implementation>
+</Method>
+
+<Method name="ReturnList">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>number,length</FormalSpec>
+<ReturnType>%ListOfDataTypes</ReturnType>
+<Implementation><![CDATA[
+	set a = ##class(%ListOfDataTypes).%New()
+	do a.Insert(1)
+	do a.Insert(2)
+	return a
+]]></Implementation>
+</Method>
+
+<Method name="IsClassMapped">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>classname</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set ns=$Namespace
+	zn "%SYS"
+	set packagename=$p(classname,".",1,*-1)
+	do ##Class(Config.Namespaces).Get(ns,.Properties)
+	set dbname=Properties("Routines")
+	set sql = "SELECT ID FROM Config.MapPackages WHERE Name = ? AND Namespace = ?"
+	
+	set rs = ##class(%SQL.Statement).%ExecDirect(.tStatement,sql,packagename,ns)
+	if rs.%Next()'=0 {
+		s result=1
+	} else {
+		if ((ns'="SAMPLES") && (ns'="DOCBOOK")) {
+			set rs = ##class(%SQL.Statement).%ExecDirect(.tStatement,sql,packagename,"%ALL")
+			if rs.%Next()'=0 {
+				s result=1
+			} else {
+				s result=0
+			}
+		} else {
+			s result=0
+		}		
+	}
+	zn ns
+	q result
+]]></Implementation>
+</Method>
+
+<Method name="SQLToJSONParams">
+<Description>
+do ##class(Utils.Main).SQLToJSONParams(1)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pValue=50</FormalSpec>
+<ProcedureBlock>0</ProcedureBlock>
+<Implementation><![CDATA[
+    s ns = $Namespace
+    zn "samples"
+    s tSQL = "SELECT ID, Name FROM Sample.Person WHERE Id > ?"
+    s tPR = ##class(%ZEN.Auxiliary.jsonSQLProvider).%New()
+    s tPR.sql = tSQL
+    s tPR.%Format = "tw"
+    s tPR.maxRows = 10
+    //s tPR.% = "%ZEN.Auxiliary.jsonSQLProvider"
+    s tPR.OnGetSQL = "%OnGetSQL"
+    s tPR.pageSize = 10
+    s tPR.currPage = 3
+
+    s tParam = ##class(%ZEN.Auxiliary.parameter).%New()
+    s tParam.value = pValue
+    d tPR.parameters.SetAt(tParam,1)
+ 
+    d tPR.%DrawJSON()  
+    //d ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,,,,,tPR)  //same thing
+    zn ns
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Stack">
+<Super>%RegisteredObject</Super>
+<TimeCreated>63686,67998.592793</TimeCreated>
+
+<Method name="Test">
+<Description>
+do ##class(Utils.Stack).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>0</ProcedureBlock>
+<Implementation><![CDATA[
+	
+	s a=1
+	s b=2
+	FOR loop=0:1:$STACK(-1) { 
+		WRITE !,"Context level:",loop,?25,"Context type: ",$STACK(loop)
+		WRITE !,?5,"Current place: ",$STACK(loop,"PLACE")
+		WRITE !,?5,"Current source: ",$STACK(loop,"MCODE")
+		WRITE ! 
+    }
+]]></Implementation>
+</Method>
+</Class>
+</Export>

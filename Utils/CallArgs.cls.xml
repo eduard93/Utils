@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.CallArgs">
+<Super>%RegisteredObject</Super>
+<TimeCreated>63538,64076.436451</TimeCreated>
+
+<Method name="Main">
+<Description>
+do ##class(Utils.CallArgs).Main()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set (arg(1),arg(2),arg(3)) = 1
+	set arg=3
+	set StandartCallCount = ..GetCount(arg(1),arg(2),arg(3))
+	w "StandartCallCount: ",StandartCallCount,!
+	
+	set NewCallCount = ..GetCount(arg...)
+	w "NewCallCount: ",NewCallCount,!
+	
+	set RefCallCount = ..GetCount(.arg)
+	w "RefCallCount: ",NewCallCount
+]]></Implementation>
+</Method>
+
+<Method name="GetCount">
+<Description>
+Get the number of pNode args</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pNode...</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	zw pNode
+	// count nodes
+	Set tCount = 0
+	Set n = $O(pNode(""))
+	While (n'="") {
+		Set tCount = tCount + 1
+		Set n = $O(pNode(n))
+	}
+	Quit tCount
+]]></Implementation>
+</Method>
+</Class>
+</Export>

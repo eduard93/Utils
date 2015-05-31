@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Param">
+<TimeCreated>63506,2158.120906</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[
+///Parameter abc = "def";
+
+]]></Content>
+</UDLText>
+
+<Parameter name="abc">
+<Expression>$zdt($Now())</Expression>
+</Parameter>
+
+<Method name="ghi">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[	w 1
+]]></Implementation>
+</Method>
+</Class>
+</Export>

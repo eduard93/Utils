@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Projection">
+<Super>%Projection.AbstractProjection</Super>
+<TimeCreated>63539,4499.203119</TimeCreated>
+
+<Projection name="Reference">
+<Description>
+For class in which you want to call CreateProjection</Description>
+<Type>Utils.Projection</Type>
+</Projection>
+
+<Method name="CreateProjection">
+<Description>
+This method is invoked when a class is compiled</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[cls:%String,&params]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set ^t=$zdt($NOW())
+    QUIT $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="RemoveProjection">
+<Description>
+This method is invoked when a class is 'uncompiled'</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[cls:%String,&params,recompile:%Boolean]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    // code here...
+    QUIT $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>

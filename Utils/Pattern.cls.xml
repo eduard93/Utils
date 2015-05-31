@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Pattern">
+<Super>%Persistent</Super>
+<TimeCreated>63679,46818.879109</TimeCreated>
+
+<Property name="Name">
+<Type>%String</Type>
+</Property>
+
+<Property name="isDeleted">
+<Type>%Boolean</Type>
+</Property>
+
+<Index name="NewIndex1">
+<Properties>Name</Properties>
+</Index>
+
+<Method name="%OnAddToSaveSet">
+<FormalSpec>depth:%Integer=3,insert:%Integer=0,callcount:%Integer=0</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	Quit:i%isDeleted=1 $$$OK
+	Quit:$d(^Utils.PatternI("NewIndex1"," "_$ZCVT(..Name,"U")))=0 $$$OK
+	if $d(^Utils.PatternI("NewIndex1"," "_$ZCVT(..Name,"U")))=10 {
+		//check that's it is not deleted
+		Quit $$$ERROR(5001,"Not Unique " _..Name)
+	}
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+do ##class(Utils.Pattern).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<ProcedureBlock>0</ProcedureBlock>
+<Implementation><![CDATA[
+	do ..%DeleteExtent()
+	
+	set a = ..%New()
+	set a.isDeleted = 0
+	set a.Name = "Ivan"
+	set st = a.%Save()
+	w:$$$ISERR(st) "a",!,$System.Status.GetErrorText(st),!
+	
+	set b = ..%New()
+	set b.isDeleted = 1
+	set b.Name = "Ivan"
+	set st = b.%Save()
+	w:$$$ISERR(st) "b",!,$System.Status.GetErrorText(st),!
+	
+	set c = ..%New()
+	set c.isDeleted = 0
+	set c.Name = "Ivan"
+	set st = c.%Save()
+	// throws error
+	w:$$$ISERR(st) "c",!,$System.Status.GetErrorText(st),!
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Utils.PatternD</DataLocation>
+<DefaultData>PatternDefaultData</DefaultData>
+<IdLocation>^Utils.PatternD</IdLocation>
+<IndexLocation>^Utils.PatternI</IndexLocation>
+<StreamLocation>^Utils.PatternS</StreamLocation>
+<ExtentSize>40</ExtentSize>
+<Data name="PatternDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>NameComputed</Value>
+</Value>
+<Value name="4">
+<Value>isDeleted</Value>
+</Value>
+<Value name="5">
+<Value>NameWithDelete</Value>
+</Value>
+</Data>
+<Property name="%%CLASSNAME">
+<Selectivity>100.0000%</Selectivity>
+</Property>
+<Property name="Name">
+<Selectivity>3.2258%</Selectivity>
+</Property>
+<SQLMap name="IDKEY">
+<BlockCount>-4</BlockCount>
+</SQLMap>
+<SQLMap name="idxString">
+<BlockCount>-4</BlockCount>
+</SQLMap>
+</Storage>
+</Class>
+</Export>
