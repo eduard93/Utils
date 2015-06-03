@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Time">
+<TimeCreated>63706,69753.452445</TimeCreated>
+
+<Method name="Main">
+<Description>
+do ##class(Utils.Time).Main(100)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>count=100</FormalSpec>
+<Implementation><![CDATA[
+	
+	s startA = $NOW()
+	do ..JobA(count)
+	s endA = $NOW()
+	s timeA = $p(endA,",",*) - $p(startA,",",*)
+	
+	s startB = $NOW()
+	do ..JobB(count)
+	s endB = $NOW()
+	s timeB = $p(endB,",",*) - $p(startB,",",*)
+	
+	w "Time No Try: ",timeA,!
+	w "Time Try:    ",timeB,!
+	w "Try takes ",$FN(timeA/timeB*100,"",2) _ "% of No Try time"
+]]></Implementation>
+</Method>
+
+<Method name="JobA">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>count=100</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	for i=1:1:count {
+		s st = ..NoTry()
+	}
+]]></Implementation>
+</Method>
+
+<Method name="JobB">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>count=100</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	for i=1:1:count {
+		s st = ..Try()
+	}
+]]></Implementation>
+</Method>
+
+<Method name="NoTry">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s a=1
+	s b=$R(1000000)
+	q 1
+]]></Implementation>
+</Method>
+
+<Method name="Try">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	try {
+		s a=1
+		s b=$R(1000000)
+	} catch ex {
+		return ex.AsStatus()
+	}
+	q 1
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -13,3 +13,4 @@ Utils.Param.CLS
 Utils.Pattern.CLS
 Utils.Projection.CLS
 Utils.Stack.CLS
+Utils.Time.CLS
