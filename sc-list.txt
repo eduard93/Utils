@@ -1,4 +1,5 @@
 Utils
+Utils.B.CLS
 Utils.CallArgs.CLS
 Utils.Encode.CLS
 Utils.Error.CLS
@@ -7,6 +8,7 @@ Utils.Length.CLS
 Utils.Macro.CLS
 Utils.Main.CLS
 Utils.NS.CLS
+Utils.OID.CLS
 Utils.Param.CLS
 Utils.Pattern.CLS
 Utils.Projection.CLS

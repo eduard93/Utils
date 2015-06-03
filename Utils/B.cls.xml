@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.B">
+<Super>%Persistent</Super>
+<TimeCreated>63706,66888.104134</TimeCreated>
+
+<Property name="A">
+</Property>
+
+<Property name="B">
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Utils.BD</DataLocation>
+<DefaultData>BDefaultData</DefaultData>
+<IdLocation>^Utils.BD</IdLocation>
+<IndexLocation>^Utils.BI</IndexLocation>
+<StreamLocation>^Utils.BS</StreamLocation>
+<Data name="BDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>A</Value>
+</Value>
+<Value name="3">
+<Value>B</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
