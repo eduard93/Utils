@@ -181,5 +181,23 @@ do ##class(Utils.Main).SQLToJSONParams(1)</Description>
     zn ns
 ]]></Implementation>
 </Method>
+
+<Method name="TryQuit">
+<Description>
+do $System.Status.GetErrorText(##class(Utils.Main).TryQuit())</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>arg</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set tSC = $$$OK
+	Try {
+		If (arg="") Quit
+	}
+	Catch(ex) {
+		Set tSC = ex.AsStatus()
+	}
+	Quit tSC
+]]></Implementation>
+</Method>
 </Class>
 </Export>

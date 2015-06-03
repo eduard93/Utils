@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Utils.Param">
+<Super>%Persistent,%Populate</Super>
 <TimeCreated>63506,2158.120906</TimeCreated>
 
-<UDLText name="T">
-<Content><![CDATA[
-///Parameter abc = "def";
-
-]]></Content>
-</UDLText>
-
 <Parameter name="abc">
+<Description>
+Parameter abc = "def";</Description>
 <Expression>$zdt($Now())</Expression>
 </Parameter>
+
+<Property name="veshhestvennoe">
+<Type>%Library.Float</Type>
+</Property>
 
 <Method name="ghi">
 <ClassMethod>1</ClassMethod>
