@@ -40,5 +40,28 @@ Get the number of pNode args</Description>
 	Quit tCount
 ]]></Implementation>
 </Method>
+
+<Method name="TestIn">
+<Description>
+do ##class(Utils.CallArgs).TestIn()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	s a = ##class(%ZEN.proxyObject).%New()
+	s a.Test=1
+	do a.%ToJSON()
+	do ..TestRef(a)
+	do a.%ToJSON()
+]]></Implementation>
+</Method>
+
+<Method name="TestRef">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>a</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	s a.Test=2
+]]></Implementation>
+</Method>
 </Class>
 </Export>

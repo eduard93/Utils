@@ -3,6 +3,24 @@
 <Class name="Utils.Time">
 <TimeCreated>63706,69753.452445</TimeCreated>
 
+<Method name="Test">
+<Description>
+do ##class(Utils.Time).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	do ..Main(1)
+	do ..Main(1)
+	do ..Main(1)
+	do ..Main(2)
+	do ..Main(3)
+	do ..Main(5)
+	do ..Main(10)
+	do ..Main(100)
+	do ..Main(1000)
+	do ..Main(10000)
+]]></Implementation>
+</Method>
+
 <Method name="Main">
 <Description>
 do ##class(Utils.Time).Main(100)</Description>
@@ -20,9 +38,10 @@ do ##class(Utils.Time).Main(100)</Description>
 	s endB = $NOW()
 	s timeB = $p(endB,",",*) - $p(startB,",",*)
 	
+	w "Iterations: ",count,!
 	w "Time No Try: ",timeA,!
 	w "Time Try:    ",timeB,!
-	w "Try takes ",$FN(timeA/timeB*100,"",2) _ "% of No Try time"
+	w "Try takes ",$FN(timeA/timeB*100,"",2) _ "% of No Try time",!,!
 ]]></Implementation>
 </Method>
 
