@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Utils.Time">
+<Description>
+Execution time comparision utils</Description>
 <TimeCreated>63706,69753.452445</TimeCreated>
 
 <Method name="Test">
@@ -27,6 +29,10 @@ do ##class(Utils.Time).Main(100)</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>count=100</FormalSpec>
 <Implementation><![CDATA[
+	set od=$io
+	set nul="\\.\nul" // /dev/null/ - UNIX
+	open nul
+	use nul
 	
 	s startA = $NOW()
 	do ..JobA(count)
@@ -38,10 +44,13 @@ do ##class(Utils.Time).Main(100)</Description>
 	s endB = $NOW()
 	s timeB = $p(endB,",",*) - $p(startB,",",*)
 	
+	use od
+	close nul
+	
 	w "Iterations: ",count,!
-	w "Time No Try: ",timeA,!
-	w "Time Try:    ",timeB,!
-	w "Try takes ",$FN(timeA/timeB*100,"",2) _ "% of No Try time",!,!
+	w "Time JobA: ",timeA,!
+	w "Time JobB: ",timeB,!
+	w "JobA takes ",$FN(timeA/timeB*100,"",2) _ "% of JobB time",!,!
 ]]></Implementation>
 </Method>
 
@@ -51,7 +60,10 @@ do ##class(Utils.Time).Main(100)</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	for i=1:1:count {
-		s st = ..NoTry()
+		//s st = ..NoTry()
+		set a = ##class(%ZEN.proxyObject).%New()
+		set a.A = 1
+		do a.%ToJSON()
 	}
 ]]></Implementation>
 </Method>
@@ -62,24 +74,26 @@ do ##class(Utils.Time).Main(100)</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	for i=1:1:count {
-		s st = ..Try()
+		//s st = ..Try()
+		set a = ##class(Utils.B).%New()
+		set a.A = 1
+		do ##class(%ZEN.Auxiliary.jsonProvider).%ObjectToJSON(a)
 	}
 ]]></Implementation>
 </Method>
 
-<Method name="NoTry">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+<UDLText name="T">
+<Content><![CDATA[
+/*
+ClassMethod NoTry() As %Status
+{
 	s a=1
 	s b=$R(1000000)
 	q 1
-]]></Implementation>
-</Method>
+}
 
-<Method name="Try">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
+ClassMethod Try()
+{
 	try {
 		s a=1
 		s b=$R(1000000)
@@ -87,7 +101,8 @@ do ##class(Utils.Time).Main(100)</Description>
 		return ex.AsStatus()
 	}
 	q 1
-]]></Implementation>
-</Method>
+}*/
+]]></Content>
+</UDLText>
 </Class>
 </Export>

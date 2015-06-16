@@ -199,5 +199,44 @@ do $System.Status.GetErrorText(##class(Utils.Main).TryQuit())</Description>
 	Quit tSC
 ]]></Implementation>
 </Method>
+
+<Method name="json">
+<Description>
+	do ##class(Utils.Main).json()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set obj=##class(%ZEN.proxyObject).%New()
+	set obj.property = "value" 
+	set obj.objproperty = ##class(%ZEN.proxyObject).%New()
+	set obj.objproperty.simpleproperty="value"
+	set obj.arrayofdt = ##class(%ListOfDataTypes).%New()
+	do obj.arrayofdt.Insert(1)
+	do obj.arrayofdt.Insert("string")
+	set obj.arrayofobj = ##class(%ListOfObjects).%New()
+	
+	set obj2=##class(%ZEN.proxyObject).%New()
+	set obj2.property = "value"
+	 
+	do obj.arrayofobj.Insert(obj2)
+	do obj.arrayofobj.Insert(obj2)
+	
+	do obj.%ToJSON() //object root
+	
+	////////////////////////////////////////////////
+	
+	set arrayofdt = ##class(%ListOfDataTypes).%New()
+	do arrayofdt.Insert(1)
+	do arrayofdt.Insert("string")
+	do ##class(%ZEN.Auxiliary.jsonProvider).%ObjectToJSON(arrayofdt) //array root, %ListOfObjects is pretty much the same
+	
+	////////////////////////////////////////////////
+	
+	set array(1) = $lb("Sam","M",20)
+	set array(2) = $lb("John","M",25)
+	set array(3) = $lb("Kate","F",30)
+	
+	do ##class(%ZEN.Auxiliary.jsonProvider).%ArrayToJSON($lb("name","sex","age"),.array)
+]]></Implementation>
+</Method>
 </Class>
 </Export>
