@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Utils.B">
-<Super>%Persistent</Super>
+<Super>%RegisteredObject</Super>
 <TimeCreated>63706,66888.104134</TimeCreated>
 
-<Property name="A">
+<Property name="ListProp">
+<Type>%String</Type>
+<Collection>list</Collection>
 </Property>
+
+<Method name="ListPropSet">
+<FormalSpec>newvalue</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	If '$isobject(newvalue),newvalue'="" Quit $$Error^%apiOBJ(5807,newvalue)
+	zw newvalue
+	If r%ListProp=newvalue Quit 1
+	If newvalue="" Kill i%ListProp,r%ListProp Set i%ListProp="",r%ListProp="" Quit 1
+	Set oref=r%ListProp Kill i%ListProp,r%ListProp Set i%ListProp="",r%ListProp=oref
+	Set key="" For i=1:1 Set value=newvalue.GetNext(.key) Quit:key=""  Set i%ListProp(i)=value
+	Quit 1
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*
+Method ListPropGet(val)
+{
+	q 1
+	zw val
+	set a= i%ListProp
+	set b= r%ListProp
+	zw a,b
+	q 1
+}*/
+]]></Content>
+</UDLText>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
@@ -26,6 +57,9 @@
 </Value>
 <Value name="4">
 <Value>Свойство</Value>
+</Value>
+<Value name="5">
+<Value>ListProp</Value>
 </Value>
 </Data>
 </Storage>

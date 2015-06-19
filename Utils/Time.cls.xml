@@ -59,11 +59,13 @@ do ##class(Utils.Time).Main(100)</Description>
 <FormalSpec>count=100</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set a = ##class(%ZEN.proxyObject).%New()
 	for i=1:1:count {
 		//s st = ..NoTry()
-		set a = ##class(%ZEN.proxyObject).%New()
+		/*set a = ##class(%ZEN.proxyObject).%New()
 		set a.A = 1
-		do a.%ToJSON()
+		do a.%ToJSON()*/
+		set $Property(a,"property") = "value"
 	}
 ]]></Implementation>
 </Method>
@@ -73,11 +75,13 @@ do ##class(Utils.Time).Main(100)</Description>
 <FormalSpec>count=100</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	set a = ##class(%ZEN.proxyObject).%New()
 	for i=1:1:count {
 		//s st = ..Try()
-		set a = ##class(Utils.B).%New()
+		/*set a = ##class(Utils.B).%New()
 		set a.A = 1
-		do ##class(%ZEN.Auxiliary.jsonProvider).%ObjectToJSON(a)
+		do ##class(%ZEN.Auxiliary.jsonProvider).%ObjectToJSON(a)*/
+		do a.%DispatchSetProperty("property", "value")
 	}
 ]]></Implementation>
 </Method>
