@@ -238,5 +238,15 @@ do $System.Status.GetErrorText(##class(Utils.Main).TryQuit())</Description>
 	do ##class(%ZEN.Auxiliary.jsonProvider).%ArrayToJSON($lb("name","sex","age"),.array)
 ]]></Implementation>
 </Method>
+
+<Method name="GetErrorText">
+<Description>
+do ##class(Utils.Main).GetErrorText()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>st:%Status={$$$ERROR($$$GeneralError,"Message")}</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	q $System.Status.GetOneStatusText(st)
+]]></Implementation>
+</Method>
 </Class>
 </Export>
