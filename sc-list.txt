@@ -12,5 +12,6 @@ Utils.OID.CLS
 Utils.Param.CLS
 Utils.Pattern.CLS
 Utils.Projection.CLS
+Utils.SharedProperty.CLS
 Utils.Stack.CLS
 Utils.Time.CLS
