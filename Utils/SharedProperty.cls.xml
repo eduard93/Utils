@@ -23,8 +23,12 @@ do ##class(Utils.SharedProperty).Populate(10)</Description>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
 	/// Can be better. Dunno how.
-	#define DataGlobal ##Expression(##class(%Dictionary.StorageDefinition).%OpenId(%classname_"||Default").DataLocation)
-	q $o($$$DataGlobal,-1)
+	/// $$$defMemberKeyGet("%Dictionary.PropertyDefinition", $$$cCLASSproperty, pParamName, $$$cPROPinitialexpression)
+	//w $$$comClassArrayNext(##Expression($$$quote(%classname)), $$$cCLASSextents,"") 
+	//#define ClassStorageStrategy ##Expression($$$quote($$$comClassKeyGet(%classname,$$$cCLASSstoragestrategy)))
+	#Define storageName $$$comClassKeyGet(%classname,$$$cCLASSstoragestrategy)
+	#Define idLocation ##Expression($$$defMemberKeyGet(%classname,$$$cCLASSstorage,$$$storageName,$$$cSDEFidlocation))
+	w $o($$$idLocation(""),-1)
 ]]></Implementation>
 </Method>
 
