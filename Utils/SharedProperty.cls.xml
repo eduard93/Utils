@@ -27,7 +27,7 @@ do ##class(Utils.SharedProperty).Populate(10)</Description>
 	//w $$$comClassArrayNext(##Expression($$$quote(%classname)), $$$cCLASSextents,"") 
 	//#define ClassStorageStrategy ##Expression($$$quote($$$comClassKeyGet(%classname,$$$cCLASSstoragestrategy)))
 	#Define storageName $$$comClassKeyGet(%classname,$$$cCLASSstoragestrategy)
-	#Define idLocation ##Expression($$$defMemberKeyGet(%classname,$$$cCLASSstorage,$$$storageName,$$$cSDEFidlocation))
+	#Define idLocation ##Expression($$$comMemberKeyGet(%classname,$$$cCLASSstorage,$$$storageName,$$$cSDEFidlocation))
 	w $o($$$idLocation(""),-1)
 ]]></Implementation>
 </Method>
