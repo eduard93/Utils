@@ -3,10 +3,21 @@
 <Class name="Utils.Pattern">
 <Super>%Persistent</Super>
 <TimeCreated>63679,46818.879109</TimeCreated>
+<ClassDefinitionError>1</ClassDefinitionError>
 
-<Property name="Name">
-<Type>%String</Type>
-</Property>
+<UDLText name="T">
+<Category>error</Category>
+<Content><![CDATA[Property Name As %String [ PopulationPct= {1}
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Category>error</Category>
+<Content><![CDATA[
+];
+
+]]></Content>
+</UDLText>
 
 <Property name="isDeleted">
 <Type>%Boolean</Type>

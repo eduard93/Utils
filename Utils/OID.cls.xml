@@ -7,6 +7,9 @@
 <Property name="A">
 </Property>
 
+<Property name="B">
+</Property>
+
 <Method name="OID">
 <Description>
 do ##class(Utils.OID).%New()</Description>
