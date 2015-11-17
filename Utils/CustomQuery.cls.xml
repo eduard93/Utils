@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.CustomQuery">
+<Super>%Persistent,%Populate</Super>
+<TimeCreated>63869,45310.24869</TimeCreated>
+
+<Property name="Prop1">
+<Type>%String</Type>
+</Property>
+
+<Property name="Prop2">
+<Type>%Integer</Type>
+</Property>
+
+<Query name="All">
+<Type>%Query</Type>
+<SqlName>All</SqlName>
+<SqlProc>1</SqlProc>
+<Parameter name="CONTAINID" value="1"/>
+<Parameter name="ROWSPEC" value="Id:%String,Prop1:%String,Prop2:%Integer"/>
+</Query>
+
+<Method name="AllExecute">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&qHandle:%Binary]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set qHandle = ""
+	q 1
+]]></Implementation>
+</Method>
+
+<Method name="AllFetch">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&qHandle:%Binary,&Row:%List,&AtEnd:%Integer=0]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set qHandle = $O(^Utils.CustomQueryD(qHandle),1,val)
+	If qHandle="" {
+		Set AtEnd=1
+		Quit 1
+	}
+	Set Row = $lb(qHandle,$lg(val,2),$lg(val,3))
+	//Set Row = $lb(qHandle)_$list(val,2,5)
+	Quit 1
+]]></Implementation>
+</Method>
+
+<Method name="AllClose">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&qHandle:%Binary]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Kill qHandle
+	Quit 1
+]]></Implementation>
+</Method>
+
+<Method name="DetermineStorage">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class=1,property=1</FormalSpec>
+<ReturnType>%String</ReturnType>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[	Quit 1
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Utils.CustomQueryD</DataLocation>
+<DefaultData>CustomQueryDefaultData</DefaultData>
+<IdLocation>^Utils.CustomQueryD</IdLocation>
+<IndexLocation>^Utils.CustomQueryI</IndexLocation>
+<StreamLocation>^Utils.CustomQueryS</StreamLocation>
+<ExtentSize>1000</ExtentSize>
+<Data name="CustomQueryDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Prop1</Value>
+</Value>
+<Value name="3">
+<Value>Prop2</Value>
+</Value>
+<Value name="4">
+<Value>Prop3</Value>
+</Value>
+<Value name="5">
+<Value>Prop4</Value>
+</Value>
+<Value name="6">
+<Value>Prop5</Value>
+</Value>
+</Data>
+<Property name="%%CLASSNAME">
+<Selectivity>0.1000%</Selectivity>
+<OutlierSelectivity>.992632:</OutlierSelectivity>
+</Property>
+<Property name="Prop1">
+<Selectivity>0.1000%</Selectivity>
+</Property>
+<Property name="Prop2">
+<Selectivity>0.1000%</Selectivity>
+</Property>
+<Property name="Prop3">
+<Selectivity>0.1000%</Selectivity>
+</Property>
+<Property name="Prop4">
+<Selectivity>0.1000%</Selectivity>
+</Property>
+<Property name="Prop5">
+<Selectivity>0.1000%</Selectivity>
+</Property>
+<SQLMap name="IDKEY">
+<BlockCount>-12</BlockCount>
+</SQLMap>
+</Storage>
+</Class>
+</Export>

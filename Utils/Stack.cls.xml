@@ -21,5 +21,25 @@ do ##class(Utils.Stack).Test()</Description>
     }
 ]]></Implementation>
 </Method>
+
+<Method name="ParentMethod">
+<Description>
+do ##class(Utils.Stack).ParentMethod()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+ //new a,b,c
+ set a="is public var"
+ do ..ChildMethod()
+]]></Implementation>
+</Method>
+
+<Method name="ChildMethod">
+<ClassMethod>1</ClassMethod>
+<PublicList>a,b,c</PublicList>
+<Implementation><![CDATA[
+ w
+ w !,a
+]]></Implementation>
+</Method>
 </Class>
 </Export>

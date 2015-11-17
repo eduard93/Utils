@@ -33,7 +33,9 @@
 <Manifest>
 <Namespace Name="User" Create="no">
 <Log Text="Mapping globals" Level="0"/>
+<Configuration>
 <GlobalMapping Global="test12" From="Samples"/> 
+</Configuration>
 </Namespace>
 <Log Text="End Mapping globals" Level="0"/>
 </Manifest>
@@ -253,6 +255,42 @@ Download list of files on https://raw.githubusercontent.com/ server.<br>
 	
 	Set Request.Server="api.github.com"
 	Return st
+]]></Implementation>
+</Method>
+
+<Method name="DoWhile">
+<Description>
+do ##class(Utils.Installer).DoWhile()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set tSC=$$$OK,$ZT="Trap"
+	Do {
+		set tSC=$$$ERROR($$$GeneralError,"Text")
+		Quit 
+	} While (0)
+Exit
+	If $$$ISERR(tSC) Set $ZT="" Throw ##class(%Installer.Exception).CreateFromStatus(tSC)
+	Quit
+Trap
+	Set $ZT="",tSC=$$$ERROR($$$CacheError,$ZE)
+	Goto Exit
+]]></Implementation>
+</Method>
+
+<Method name="Do">
+<Description>
+do ##class(Utils.Installer).Do()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set tSC=$$$OK,$ZT="Trap"
+		set tSC=$$$ERROR($$$GeneralError,"Text")
+		Quit 
+Exit
+	If $$$ISERR(tSC) Set $ZT="" Throw ##class(%Installer.Exception).CreateFromStatus(tSC)
+	Quit
+Trap
+	Set $ZT="",tSC=$$$ERROR($$$CacheError,$ZE)
+	Goto Exit
 ]]></Implementation>
 </Method>
 </Class>

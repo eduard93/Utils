@@ -22,6 +22,7 @@ do ##class(Utils.OID).%New()</Description>
 	//zw a
 	//w i%"class name"
 	//w $listget(%oid)
+	w $$$MaxCacheInt
 ]]></Implementation>
 </Method>
 
