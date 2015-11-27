@@ -72,7 +72,7 @@ Do ##class(Utils.CustomQuery).Test(100)</Description>
 <FormalSpec>Count=100</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	Set methods = "OldDynamicSQL,NewDynamicSQL,OldCustomQuery,NewCustomQuery,OldExtentQuery,NewExtentQuery,StaticSQL,GlobalIteration"
+	Set methods = "NewDynamicSQL,OldCustomQuery,NewCustomQuery,OldExtentQuery,NewExtentQuery,StaticSQL,GlobalIteration"
 	Set methodsCount = $L(methods,",")
 	For i=1:1:methodsCount {
 		Set method = $P(methods,",",i)
@@ -100,7 +100,8 @@ Do ##class(Utils.CustomQuery).Test(100)</Description>
 
 <Method name="OldDynamicSQL">
 <Description>
-Do ##class(Utils.CustomQuery).OldDynamicSQL()</Description>
+Do ##class(Utils.CustomQuery).OldDynamicSQL()
+DOES NOT WORK?</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
 	/*Set rset = ##class(%ResultSet).%New("SELECT * FROM Utils.CustomQuery")
@@ -232,6 +233,19 @@ Do ##class(Utils.CustomQuery).GlobalIteration()</Description>
 <Value>Prop2</Value>
 </Value>
 </Data>
+<Property name="%%CLASSNAME">
+<Selectivity>0.0074%</Selectivity>
+<OutlierSelectivity>.999262:</OutlierSelectivity>
+</Property>
+<Property name="Prop1">
+<Selectivity>0.0012%</Selectivity>
+</Property>
+<Property name="Prop2">
+<Selectivity>0.0010%</Selectivity>
+</Property>
+<SQLMap name="IDKEY">
+<BlockCount>-1096</BlockCount>
+</SQLMap>
 </Storage>
 </Class>
 </Export>
