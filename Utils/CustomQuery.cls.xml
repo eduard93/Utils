@@ -26,7 +26,7 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	Set qHandle = ""
-	q 1
+	Quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -38,11 +38,11 @@
 	Set qHandle = $O(^Utils.CustomQueryD(qHandle),1,val)
 	If qHandle="" {
 		Set AtEnd=1
-		Quit 1
+		Quit $$$OK
 	}
 	Set Row = $lb(qHandle,$lg(val,2),$lg(val,3))
-	//Set Row = $lb(qHandle)_$list(val,2,5)
-	Quit 1
+	#;Set Row = $lb(qHandle)_$list(val,2,5)
+	Quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -52,7 +52,7 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	Kill qHandle
-	Quit 1
+	Quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -61,7 +61,156 @@
 <FormalSpec>class=1,property=1</FormalSpec>
 <ReturnType>%String</ReturnType>
 <SqlProc>1</SqlProc>
-<Implementation><![CDATA[	Quit 1
+<Implementation><![CDATA[	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+Do ##class(Utils.CustomQuery).Test(100)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Count=100</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	Set methods = "OldDynamicSQL,NewDynamicSQL,OldCustomQuery,NewCustomQuery,OldExtentQuery,NewExtentQuery,StaticSQL,GlobalIteration"
+	Set methodsCount = $L(methods,",")
+	For i=1:1:methodsCount {
+		Set method = $P(methods,",",i)
+		Set time = ..ExecuteNTimes(method, Count)
+		Write method,$c(9),$FN(time,"."),!
+	}
+]]></Implementation>
+</Method>
+
+<Method name="ExecuteNTimes">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Method,Count=100</FormalSpec>
+<ReturnType>%Double</ReturnType>
+<Implementation><![CDATA[
+	Set start = $NOW()
+	For i=1:1:Count {
+		Do $ClassMethod("Utils.CustomQuery",Method)
+	}
+	Set end = $NOW()
+	Set time = $p(end,",",*) - $p(start,",",*)
+	Set timeAvg = time/Count
+	Quit timeAvg
+]]></Implementation>
+</Method>
+
+<Method name="OldDynamicSQL">
+<Description>
+Do ##class(Utils.CustomQuery).OldDynamicSQL()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	/*Set rset = ##class(%ResultSet).%New("SELECT * FROM Utils.CustomQuery")
+	Do rset.Execute()
+
+	While (rset.Next()) {
+		#; Write rset.Data("Id")," "
+	}*/
+]]></Implementation>
+</Method>
+
+<Method name="NewDynamicSQL">
+<Description>
+Do ##class(Utils.CustomQuery).NewDynamicSQL()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set rset = ##class(%SQL.Statement).%ExecDirect(,"SELECT * FROM Utils.CustomQuery")
+
+	While (rset.%Next()) {
+		#; Write rset.%Get("Id")," "
+	}
+]]></Implementation>
+</Method>
+
+<Method name="OldCustomQuery">
+<Description>
+Do ##class(Utils.CustomQuery).OldCustomQuery()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set rset = ##class(%ResultSet).%New("Utils.CustomQuery:All")
+	Do rset.Execute()
+
+	While (rset.Next()) {
+		#; Write rset.Data("Id"),!
+	}
+]]></Implementation>
+</Method>
+
+<Method name="NewCustomQuery">
+<Description>
+Do ##class(Utils.CustomQuery).NewCustomQuery()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set rset = ##class(%SQL.Statement).%ExecDirect(,"Call Utils.""All""()")
+
+	While (rset.%Next()) {
+		#; Write rset.%Get("Id")," "
+	}
+]]></Implementation>
+</Method>
+
+<Method name="OldExtentQuery">
+<Description>
+Do ##class(Utils.CustomQuery).OldExtentQuery()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set rset = ##class(%ResultSet).%New("Utils.CustomQuery:Extent")
+	Do rset.Execute()
+
+	While (rset.Next()) {
+		#; Write rset.Data("Id")," "
+	}
+]]></Implementation>
+</Method>
+
+<Method name="NewExtentQuery">
+<Description>
+Do ##class(Utils.CustomQuery).NewExtentQuery()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set rset = ##class(%SQL.Statement).%ExecDirect(,"Call Utils.CustomQuery_Extent()")
+
+	While (rset.%Next()) {
+		#; Write rset.%Get("Id")," "
+	}
+]]></Implementation>
+</Method>
+
+<Method name="StaticSQL">
+<Description>
+Do ##class(Utils.CustomQuery).StaticSQL()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	&sql(	DECLARE C1 CURSOR FOR
+			SELECT Id, Prop1, Prop2
+			INTO :Id, :Prop1, :Prop2
+			FROM Utils.CustomQuery)
+	&sql(OPEN C1)
+	&sql(FETCH C1)
+	While (SQLCODE = 0) {
+		#; Write Id," "
+		&sql(FETCH C1)
+	}
+	&sql(CLOSE C1)
+]]></Implementation>
+</Method>
+
+<Method name="GlobalIteration">
+<Description>
+Do ##class(Utils.CustomQuery).GlobalIteration()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set Id=""
+	Set Id = $O(^Utils.CustomQueryD(Id),1,val)
+	While (Id'="") {
+		Set Prop1 = $lg(val,2)
+		Set Prop1 = $lg(val,3)
+		#; Write Id," "
+		Set Id = $O(^Utils.CustomQueryD(Id),1,val)
+	}
 ]]></Implementation>
 </Method>
 
@@ -72,7 +221,6 @@
 <IdLocation>^Utils.CustomQueryD</IdLocation>
 <IndexLocation>^Utils.CustomQueryI</IndexLocation>
 <StreamLocation>^Utils.CustomQueryS</StreamLocation>
-<ExtentSize>1000</ExtentSize>
 <Data name="CustomQueryDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
@@ -83,38 +231,7 @@
 <Value name="3">
 <Value>Prop2</Value>
 </Value>
-<Value name="4">
-<Value>Prop3</Value>
-</Value>
-<Value name="5">
-<Value>Prop4</Value>
-</Value>
-<Value name="6">
-<Value>Prop5</Value>
-</Value>
 </Data>
-<Property name="%%CLASSNAME">
-<Selectivity>0.1000%</Selectivity>
-<OutlierSelectivity>.992632:</OutlierSelectivity>
-</Property>
-<Property name="Prop1">
-<Selectivity>0.1000%</Selectivity>
-</Property>
-<Property name="Prop2">
-<Selectivity>0.1000%</Selectivity>
-</Property>
-<Property name="Prop3">
-<Selectivity>0.1000%</Selectivity>
-</Property>
-<Property name="Prop4">
-<Selectivity>0.1000%</Selectivity>
-</Property>
-<Property name="Prop5">
-<Selectivity>0.1000%</Selectivity>
-</Property>
-<SQLMap name="IDKEY">
-<BlockCount>-12</BlockCount>
-</SQLMap>
 </Storage>
 </Class>
 </Export>
