@@ -2,6 +2,8 @@ Utils
 Utils.B.CLS
 Utils.CallArgs.CLS
 Utils.CustomQuery.CLS
+Utils.CustomQueryRS.CLS
+Utils.CustomQueryStatic.CLS
 Utils.Encode.CLS
 Utils.Error.CLS
 Utils.Installer.CLS

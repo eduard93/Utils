@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.CustomQueryRS">
+<Super>%SQL.CustomResultSet</Super>
+<TimeCreated>63888,69965.290043</TimeCreated>
+
+<Property name="Id">
+<Type>%String</Type>
+</Property>
+
+<Property name="Prop1">
+<Type>%String</Type>
+</Property>
+
+<Property name="Prop2">
+<Type>%Integer</Type>
+</Property>
+
+<Method name="%OpenCursor">
+<ReturnType>%Library.Status</ReturnType>
+<Implementation><![CDATA[
+	Set ..Id = ""
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="%Next">
+<FormalSpec><![CDATA[&sc:%Library.Status]]></FormalSpec>
+<PlaceAfter>%Execute</PlaceAfter>
+<ReturnType>%Library.Integer</ReturnType>
+<Implementation><![CDATA[
+	Set sc = $$$OK
+	Set ..Id = $Order(^Utils.CustomQueryD(..Id),1,val)
+	Quit:..Id="" 0
+	Set ..Prop1 = $Lg(val,2)
+	Set ..Prop2 = $Lg(val,3)
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+Do ##class(Utils.CustomQueryRS).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set resultset=..%New()
+	Do resultset.%Display()
+]]></Implementation>
+</Method>
+</Class>
+</Export>
