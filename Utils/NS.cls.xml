@@ -72,5 +72,34 @@ do ##class(Utils.NS).Create("")]]></Description>
  Return $$$OK
 ]]></Implementation>
 </Method>
+
+<Method name="GetOriginalNamespace">
+<Description>
+Do ##class(Utils.NS).GetOriginalNamespace()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Package="WebTerminal"</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	Set ns=$Namespace
+	Set databasepath = ##class(%SYS.Namespace).GetPackageDest($Namespace,Package)
+	Set databasepath = $p(databasepath,"^",2)
+	Zn "%SYS"
+	Do ##Class(Config.Databases).DatabasesByDirectory("",databasepath,.databaselist)
+	Set database = $lg(databaselist,1)
+	Set statement = ##class(%SQL.Statement).%New()
+	Set status = statement.%PrepareClassQuery("Config.Namespaces","List")
+	If $$$ISERR(status) { Do $system.OBJ.DisplayError(status) }
+	Set resultset = statement.%Execute()
+	While resultset.%Next() {
+		If resultset.%Get("Routines")=database {
+			Kill resultset
+			Zn ns
+			Return resultset.%Get("Namespace")
+		}
+	}
+	Zn ns
+	Return ns
+]]></Implementation>
+</Method>
 </Class>
 </Export>
