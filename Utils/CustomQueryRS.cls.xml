@@ -43,8 +43,11 @@
 Do ##class(Utils.CustomQueryRS).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-	Set resultset=..%New()
-	Do resultset.%Display()
+	Set resultset= ##class(Utils.CustomQueryRS).%New()
+	While resultset.%Next() {
+		Write resultset.Id, $c(9), resultset.Prop1, $c(9), resultset.Prop2, !
+	}
+	//Do resultset.%Display()
 ]]></Implementation>
 </Method>
 </Class>

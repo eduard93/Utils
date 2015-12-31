@@ -12,15 +12,15 @@
 <Type>%Integer</Type>
 </Property>
 
-<Query name="All">
+<Query name="AllRecords">
 <Type>%Query</Type>
-<SqlName>All</SqlName>
+<SqlName>AllRecords</SqlName>
 <SqlProc>1</SqlProc>
 <Parameter name="CONTAINID" value="1"/>
 <Parameter name="ROWSPEC" value="Id:%String,Prop1:%String,Prop2:%Integer"/>
 </Query>
 
-<Method name="AllExecute">
+<Method name="AllRecordsExecute">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&qHandle:%Binary]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -30,7 +30,7 @@
 ]]></Implementation>
 </Method>
 
-<Method name="AllFetch">
+<Method name="AllRecordsFetch">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&qHandle:%Binary,&Row:%List,&AtEnd:%Integer=0]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -52,7 +52,7 @@
 ]]></Implementation>
 </Method>
 
-<Method name="AllClose">
+<Method name="AllRecordsClose">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&qHandle:%Binary]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -164,7 +164,7 @@
 <IdLocation>^Utils.CustomQueryD</IdLocation>
 <IndexLocation>^Utils.CustomQueryI</IndexLocation>
 <StreamLocation>^Utils.CustomQueryS</StreamLocation>
-<ExtentSize>10</ExtentSize>
+<ExtentSize>1000000</ExtentSize>
 <Data name="CustomQueryDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
@@ -177,16 +177,17 @@
 </Value>
 </Data>
 <Property name="%%CLASSNAME">
-<Selectivity>100.0000%</Selectivity>
+<Selectivity>0.0023%</Selectivity>
+<OutlierSelectivity>.999767:</OutlierSelectivity>
 </Property>
 <Property name="Prop1">
-<Selectivity>10.0000%</Selectivity>
+<Selectivity>0.0004%</Selectivity>
 </Property>
 <Property name="Prop2">
-<Selectivity>10.0000%</Selectivity>
+<Selectivity>0.0001%</Selectivity>
 </Property>
 <SQLMap name="IDKEY">
-<BlockCount>-4</BlockCount>
+<BlockCount>-10932</BlockCount>
 </SQLMap>
 </Storage>
 </Class>

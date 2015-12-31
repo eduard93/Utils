@@ -80,6 +80,7 @@ Do ##class(Utils.NS).GetOriginalNamespace()</Description>
 <FormalSpec>Package="WebTerminal"</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
+	set a= ##class(Subpackage.Class).%New()
 	Set ns=$Namespace
 	Set databasepath = ##class(%SYS.Namespace).GetPackageDest($Namespace,Package)
 	Set databasepath = $p(databasepath,"^",2)
