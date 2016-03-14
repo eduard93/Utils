@@ -13,31 +13,11 @@
 <Configuration>
 <Database Name="${Namespace}" Dir="${MGRDIR}/${Namespace}" Create="yes" MountRequired="true" MountAtStartup="true"/>
 </Configuration>
-<CSPApplication Url="/csp/${Namespace}" Directory="#{##class(%DeepSee.Report.UI.reportModelServer).GetCSPDirectory()}/${Namespace}" AuthenticationMethods="64" IsNamespaceDefault="true" />
-<If Condition='(##class(Security.Applications).Exists("/"_"${Namespace}")=0)'>
-	<!--<Log Text="Creating web application /${Namespace}" Level="0"/>-->
-	<!-- This method creates conflits with web-server. Kept for reference purposes. See ##class(%EnsembleMgr).createPortalApp()
-	<CSPApplication Url="/${Namespace}" Directory="" AuthenticationMethods="64" IsNamespaceDefault="false" />-->
-	<!--<RunInstall Class="Utils.Installer" Method="CreateWebApp"/>-->
-</If>
+<!--<CSPApplication Url="/csp/${Namespace}" Directory="#{##class(%DeepSee.Report.UI.reportModelServer).GetCSPDirectory()}${Namespace}" AuthenticationMethods="64" IsNamespaceDefault="true" />-->
 </Namespace>
  <Log Text="End Creating namespace ${Namespace}" Level="0"/>
+ <RunInstall Class="Utils.Installer" Method="SetSourceControl"/>
 </If>
-</Manifest>
-]]></Data>
-</XData>
-
-<XData name="Mapping">
-<XMLNamespace>INSTALLER</XMLNamespace>
-<Data><![CDATA[
-<Manifest>
-<Namespace Name="User" Create="no">
-<Log Text="Mapping globals" Level="0"/>
-<Configuration>
-<GlobalMapping Global="test12" From="Samples"/> 
-</Configuration>
-</Namespace>
-<Log Text="End Mapping globals" Level="0"/>
 </Manifest>
 ]]></Data>
 </XData>
@@ -50,11 +30,58 @@ do ##class(Utils.Installer).Namespace(.pVars)</Description>
 <Internal>1</Internal>
 <ClassMethod>1</ClassMethod>
 <CodeMode>objectgenerator</CodeMode>
-<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer,pInstaller:%Installer.Installer]]></FormalSpec>
+<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer=0,pInstaller:%Installer.Installer]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[ 	Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "Namespace")
 ]]></Implementation>
 </Method>
+
+<Method name="SetSourceControl">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer=0,pInstaller:%Installer.Installer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ 	Set ns = pInstaller.Evaluate("${Namespace}")
+ 	Set ^%SYS("SourceControlClass",$ZCVT(ns,"U"))="%SourceControl.Git"
+ 	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="CreateNamepace">
+<Description>
+Do ##class(Utils.Installer).CreateNamepace("TEMP5")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Name:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set pVars("Namespace")=Name
+	Quit ..Namespace(.pVars)
+]]></Implementation>
+</Method>
+
+<XData name="Mapping">
+<XMLNamespace>INSTALLER</XMLNamespace>
+<Data><![CDATA[
+<Manifest>
+<Namespace Name="User" Create="no" Data="User" Code="User">
+<Log Text="Mapping globals" Level="0"/>
+<Configuration>
+<GlobalMapping Global="test1111" From="SAMPLES"/> 
+</Configuration>
+</Namespace>
+<Log Text="End Mapping globals" Level="0"/>
+</Manifest>
+]]></Data>
+</XData>
+
+<XData name="Role">
+<XMLNamespace>INSTALLER</XMLNamespace>
+<Data><![CDATA[
+<Manifest>
+<Role Name="MDX2JSON" Description="Hi,There" Resources="%DB_CACHESYS:RW,%Admin_Secure:U" />
+</Manifest>
+]]></Data>
+</XData>
 
 <Method name="Mapping">
 <Description>
@@ -67,6 +94,16 @@ do ##class(Utils.Installer).Mapping(.pVars)</Description>
 <FormalSpec><![CDATA[&pVars,pLogLevel:%Integer,pInstaller:%Installer.Installer]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[ 	Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "Mapping")
+]]></Implementation>
+</Method>
+
+<Method name="Role">
+<Internal>1</Internal>
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<FormalSpec><![CDATA[&pVars,pLogLevel:%Integer,pInstaller:%Installer.Installer]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[ 	Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "Role")
 ]]></Implementation>
 </Method>
 

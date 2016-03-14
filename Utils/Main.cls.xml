@@ -248,5 +248,16 @@ do ##class(Utils.Main).GetErrorText()</Description>
 <Implementation><![CDATA[	q $System.Status.GetOneStatusText(st)
 ]]></Implementation>
 </Method>
+
+<Method name="FormatText">
+<Description>
+do ##class(Utils.Main).FormatText()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	q $$$FormatText("Text %1, %2","Hi","Hello")
+]]></Implementation>
+</Method>
 </Class>
 </Export>

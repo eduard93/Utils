@@ -53,7 +53,7 @@ w ##class(Utils.Persistent).GetExtentSize("Utils.Persistent")</Description>
 	Set Id = $Order(@Global@(""))
 	Set Count = 0
 	While Id '= "" {
-		Set Id = $o(@Global@(Id))
+		Set Id = $Order(@Global@(Id))
 		Set Count = Count + 1
 	}
 	Return Count
@@ -70,6 +70,50 @@ w ##class(Utils.Persistent).GetGlobal("Utils.Persistent")</Description>
 	Return:'$$$comClassDefined(Class) ""
 	Set Strategy = $$$comClassKeyGet(Class, $$$cCLASSstoragestrategy)
 	Return $$$defMemberKeyGet(Class, $$$cCLASSstorage, Strategy, $$$cSDEFdatalocation)
+]]></Implementation>
+</Method>
+
+<Method name="ExtSize">
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	
+	Set ^a  = %code
+	#dim Storage As %Dictionary.CompiledStorage
+	set Strategy = %compiledclass.StorageStrategy
+	Set StorageId = %compiledclass.Storages.FindObjectId(%compiledclass.Name_"||"_Strategy)
+	Set Storage = %compiledclass.Storages.GetAt(StorageId)
+	Set Global = Storage.DataLocation
+    Do %code.WriteLine(" Set Id = $Order("_Global_"(""""))")
+    Do %code.WriteLine(" Set Count = 0")
+    Do %code.WriteLine(" While Id '= """" {")
+    Do %code.WriteLine(" 	Set Id = $Order("_Global_"(Id))")
+    Do %code.WriteLine(" 	Set Count = Count + 1")
+    Do %code.WriteLine(" }")
+    Do %code.WriteLine(" Return Count")
+    Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Index name="NewIndex1">
+<Properties>Main</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="IsLastKnownRecordCheck">
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<FormalSpec>CitizenRef:%Integer,RelocationDate:%Date</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    set storagename="Default"
+    set storageInd=%class.Storages.FindObjectId(%classname_"||"_storagename)
+    set storage=%class.Storages.GetAt(storageInd)
+    set indexLocation=storage.IndexLocation
+    //set indexLocation=$name(@indexLocation@("CitizenRelocation"))
+    do %code.WriteLine($c(9)_"quit $order("_indexLocation_"(""CitizenRelocation"",CitizenRef, RelocationDate))=""""")
+    quit $$$OK
 ]]></Implementation>
 </Method>
 

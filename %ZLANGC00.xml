@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Routine name="%ZLANGC00" type="MAC" languagemode="0"><![CDATA[
+ ; %ZLANGC00
+ ; custom commands for ObjectScript
+ ; http://localhost:57772/csp/docbook/DocBook.UI.Page.cls?KEY=GSTU_customize
+  Quit    
+
+/// Execute Query and display the results 
+/// Call like this:
+/// zsql "SELECT TOP 10 Name FROM Sample.Person"
+ZSQL(Query)
+	#Dim ResultSet As %SQL.StatementResult
+	Set ResultSet = ##class(%SQL.Statement).%ExecDirect(, Query)
+	Do ResultSet.%Display()
+	Quit
+
+/// Move user to a namespace of his choice
+/// Call like this:
+/// zm "s"
+ZM(Namespace)
+	Do MoveToNamespace^%ZSTART(Namespace)
+	Quit
+]]></Routine>
+</Export>
