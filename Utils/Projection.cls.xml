@@ -17,8 +17,11 @@ This method is invoked when a class is compiled</Description>
 <FormalSpec><![CDATA[cls:%String,&params]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    set ^t=$zdt($NOW())
-    QUIT $$$OK
+	Do ##class(Utils.Browser).RunPage()
+	//Read !,"Input x: ", x:2
+    Set ^test = $Get(x)
+    Set ^test("user") = $System.Process.UserName()
+    Quit $$$OK
 ]]></Implementation>
 </Method>
 
@@ -29,8 +32,9 @@ This method is invoked when a class is 'uncompiled'</Description>
 <FormalSpec><![CDATA[cls:%String,&params,recompile:%Boolean]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+	Do ##class(Utils.Browser).RunPage()
     // code here...
-    QUIT $$$OK
+    Quit $$$OK
 ]]></Implementation>
 </Method>
 </Class>
