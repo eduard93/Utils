@@ -17,6 +17,7 @@ Utils.Param.cls
 Utils.Pattern.cls
 Utils.Persistent.cls
 Utils.Projection.cls
+Utils.Request.cls
 Utils.SharedProperty.cls
 Utils.Stack.cls
 Utils.Time.cls
