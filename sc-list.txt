@@ -8,6 +8,7 @@ Utils.CustomQueryStatic.cls
 Utils.Encode.cls
 Utils.Error.cls
 Utils.Installer.cls
+Utils.Job.cls
 Utils.Length.cls
 Utils.Macro.cls
 Utils.Main.cls

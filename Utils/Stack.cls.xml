@@ -41,5 +41,38 @@ do ##class(Utils.Stack).ParentMethod()</Description>
  w !,a
 ]]></Implementation>
 </Method>
+
+<Method name="GetStackAsArray">
+<Description>
+Do ##class(Utils.Stack).GetStackAsArray()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	//Do ..StackAsArray()
+	w !
+	//Do ##class(Src.Utils.Test).Test2()
+	FOR level=1:1:$STACK(-1) { 
+	WRITE !,"Context level:",level,?25,"Context type: ",$STACK(level)
+	WRITE !,?5,"Current place: ",$STACK(level,"PLACE")
+	WRITE !,?5,"Current source: ",$STACK(level,"MCODE")
+	set key = $zu(42,level,"")
+	while (key'=""){
+		if ($zu(41,level,key)=level){
+			w key_"="_$zu(43,level,key),!
+		}
+		set key = $zu(42,level,key)
+	}
+		WRITE ! 
+	}
+]]></Implementation>
+</Method>
+
+<Method name="StackAsArray">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set ex = ##class(%Exception.SystemException).%New()
+	Do ex.StackAsArray(.arr)
+	zw arr
+]]></Implementation>
+</Method>
 </Class>
 </Export>
