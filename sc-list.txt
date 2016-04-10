@@ -7,6 +7,7 @@ Utils.CustomQueryRS.cls
 Utils.CustomQueryStatic.cls
 Utils.Encode.cls
 Utils.Error.cls
+Utils.Generator.cls
 Utils.Installer.cls
 Utils.Job.cls
 Utils.Length.cls

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Generator">
+<Description>
+do $system.OBJ.UnCompile("Utils.Generator")
+do $system.OBJ.Compile("Utils.Generator")</Description>
+<Abstract>1</Abstract>
+<TimeCreated>64018,66974.425994</TimeCreated>
+
+<Method name="B">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[	s ^a = 1
+]]></Implementation>
+</Method>
+
+<Method name="A">
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<GenerateAfter>B</GenerateAfter>
+<PlaceAfter>B</PlaceAfter>
+<Implementation><![CDATA[
+	k ^a
+	do ..B()
+]]></Implementation>
+</Method>
+</Class>
+</Export>
