@@ -78,8 +78,6 @@ w ##class(Utils.Persistent).GetGlobal("Utils.Persistent")</Description>
 <CodeMode>objectgenerator</CodeMode>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
-	
-	Set ^a  = %code
 	#dim Storage As %Dictionary.CompiledStorage
 	set Strategy = %compiledclass.StorageStrategy
 	Set StorageId = %compiledclass.Storages.FindObjectId(%compiledclass.Name_"||"_Strategy)
