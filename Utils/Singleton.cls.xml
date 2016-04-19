@@ -88,7 +88,7 @@ Do ##class(Utils.Singleton).Test()</Description>
 Constructor, loads data from global</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	//Return:($Stack(1,"PLACE")'["Get") $$$ERROR($$$GeneralError, "This class can't be instantiated directly, call Get method")
+	//Return:($Stack($Stack-2,"PLACE")'["Get") $$$ERROR($$$GeneralError, "This class can't be instantiated directly, call Get method")
 	Set ..Content = $Get(@..#Global)
 	Return $$$OK
 ]]></Implementation>
