@@ -21,5 +21,6 @@ Utils.Persistent.cls
 Utils.Projection.cls
 Utils.Request.cls
 Utils.SharedProperty.cls
+Utils.Singleton.cls
 Utils.Stack.cls
 Utils.Time.cls
