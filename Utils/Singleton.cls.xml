@@ -73,7 +73,7 @@ Do ##class(Utils.Singleton).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
 	Set a = ##class(Utils.Singleton).Get()
-	Set a.Content = 2
+	Set a.Content = $Random(100)
 	Set b=##class(Utils.Singleton).Get()
 	Write "object b: " _ b.Content,!
 	Do a.Save()
