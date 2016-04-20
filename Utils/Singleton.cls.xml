@@ -3,7 +3,7 @@
 <Class name="Utils.Singleton">
 <Description>
 Singleton pattern implementation</Description>
-<Super>%Library.SystemBase</Super>
+<Super>%SystemBase</Super>
 <TimeCreated>64027,85626.491984</TimeCreated>
 
 <Parameter name="Global">
