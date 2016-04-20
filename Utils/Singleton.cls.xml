@@ -49,7 +49,6 @@ with Content value taken from global
 If there is an object of this class in memory
 then it would be returned</Description>
 <ClassMethod>1</ClassMethod>
-<ProcedureBlock>0</ProcedureBlock>
 <ReturnType>Utils.Singleton</ReturnType>
 <Implementation><![CDATA[
 	Set OREF = ..GetOref()
