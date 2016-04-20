@@ -25,12 +25,12 @@ This method finds OREF for an object of a current class if it exists in a curren
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
-	/// Get current classname
+	// Get current classname
 	Set Class = $ClassName()
 	Set OREF = $$$NULLOREF
 	
-	/// This query returns a list of all object instances currently in memory within the current process. 
-	/// http://docs.intersystems.com/latest/csp/documatic/%25CSP.Documatic.cls?PAGE=CLASS&LIBRARY=%25SYS&CLASSNAME=%25SYSTEM.OBJ#Anchor_Queries
+	// This query returns a list of all object instances currently in memory within the current process. 
+	// http://docs.intersystems.com/latest/csp/documatic/%25CSP.Documatic.cls?PAGE=CLASS&LIBRARY=%25SYS&CLASSNAME=%25SYSTEM.OBJ#Anchor_Queries
 	&sql(Select Count(OREF), OREF INTO :Count, :OREFTemp FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
 	
 	If Count'=0 {	
@@ -56,7 +56,7 @@ then it would be returned</Description>
 	If OREF = $$$NULLOREF {
 		Set Obj = ..%New()
 	} Else {
-		/// Convert integer-oref into real OREF 
+		// Convert integer-oref into real OREF 
 		Set Obj = $$$objIntToOref(OREF)
 	}
 	Return Obj
@@ -85,7 +85,7 @@ Do ##class(Utils.Singleton).Test()</Description>
 Constructor, loads data from global</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	//Return:($Stack($Stack-2,"PLACE")'["Get") $$$ERROR($$$GeneralError, "This class can't be instantiated directly, call Get method")
+	// Return:($Stack($Stack-2,"PLACE")'["Get") $$$ERROR($$$GeneralError, "This class can't be instantiated directly, call Get method")
 	Set ..Content = $Get(@..#Global)
 	Return $$$OK
 ]]></Implementation>
