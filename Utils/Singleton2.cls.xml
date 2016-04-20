@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Singleton2">
+<Description>
+Another singleton</Description>
+<Super>%SystemBase</Super>
+<TimeCreated>64028,47067.347471</TimeCreated>
+
+<Property name="Content">
+<Type>%String</Type>
+</Property>
+
+<Method name="Get">
+<Description>
+set a = ##class(Utils.Singleton2).Get()</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>Utils.Singleton2</ReturnType>
+<Implementation><![CDATA[
+	#Define var %Var
+	If '$Data($$$var) || '$IsObject($$$var) {
+		Set Obj = ..%New()
+		Set $$$var = Obj
+	} Else {
+		Set Obj = $$$var
+	}
+	Return Obj
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+do ##class(Utils.Singleton2).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set a = ##class(Utils.Singleton2).Get()
+	Set a.Content = $Random(100)
+	
+	Set b = ##class(Utils.Singleton2).Get()
+	Write b.Content
+]]></Implementation>
+</Method>
+</Class>
+</Export>
