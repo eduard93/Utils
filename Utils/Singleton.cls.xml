@@ -21,13 +21,16 @@ It can be be anything: string or a dynamic object</Description>
 
 <Method name="GetOref">
 <Description>
-This method finds OREF for a current class if it exist in a current process</Description>
+This method finds OREF for an object of a current class if it exists in a current process</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
+	/// Get current classname
 	Set Class = $ClassName()
 	Set OREF = $$$NULLOREF
 	
+	/// This query returns a list of all object instances currently in memory within the current process. 
+	/// http://docs.intersystems.com/latest/csp/documatic/%25CSP.Documatic.cls?PAGE=CLASS&LIBRARY=%25SYS&CLASSNAME=%25SYSTEM.OBJ#Anchor_Queries
 	&sql(Select Count(OREF), OREF INTO :Count, :OREFTemp FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
 	
 	If Count'=0 {	
@@ -51,15 +54,18 @@ then it would be returned</Description>
 <Implementation><![CDATA[
 	Set OREF = ..GetOref()
 	If OREF = $$$NULLOREF {
-		Return ..%New()
+		Set Obj = ..%New()
 	} Else {
-		Return $$$objIntToOref(OREF)
+		/// Convert integer-oref into real OREF 
+		Set Obj = $$$objIntToOref(OREF)
 	}
+	Return Obj
 ]]></Implementation>
 </Method>
 
 <Method name="Test">
 <Description>
+Test singleton object
 Do ##class(Utils.Singleton).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
