@@ -31,7 +31,7 @@ This method finds OREF for an object of a current class if it exists in a curren
 	
 	// This query returns a list of all object instances currently in memory within the current process. 
 	// http://docs.intersystems.com/latest/csp/documatic/%25CSP.Documatic.cls?PAGE=CLASS&LIBRARY=%25SYS&CLASSNAME=%25SYSTEM.OBJ#Anchor_Queries
-	&sql(Select Count(OREF), OREF INTO :Count, :OREFTemp FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
+	&sql(SELECT Count(OREF), OREF INTO :Count, :OREFTemp FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
 	
 	If Count'=0 {	
 		Set OREF = OREFTemp
@@ -71,11 +71,11 @@ Do ##class(Utils.Singleton).Test()</Description>
 <Implementation><![CDATA[
 	Set a = ##class(Utils.Singleton).Get()
 	Set a.Content = $Random(100)
-	Set b=##class(Utils.Singleton).Get()
+	Set b = ##class(Utils.Singleton).Get()
 	Write "object b: " _ b.Content,!
 	Do a.Save()
 	Kill
-	Set c=##class(Utils.Singleton).Get()
+	Set c = ##class(Utils.Singleton).Get()
 	Write "object c: " _ c.Content
 ]]></Implementation>
 </Method>
