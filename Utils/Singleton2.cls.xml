@@ -12,16 +12,16 @@ Another singleton</Description>
 
 <Method name="Get">
 <Description>
-set a = ##class(Utils.Singleton2).Get()</Description>
+Set a = ##class(Utils.Singleton2).Get()</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>Utils.Singleton2</ReturnType>
 <Implementation><![CDATA[
-	#Define var %Var
-	If '$Data($$$var) || '$IsObject($$$var) {
+	#Define Var %Var
+	If '$Data($$$Var) || '$IsObject($$$Var) {
 		Set Obj = ..%New()
-		Set $$$var = Obj
+		Set $$$Var = Obj
 	} Else {
-		Set Obj = $$$var
+		Set Obj = $$$Var
 	}
 	Return Obj
 ]]></Implementation>
@@ -29,7 +29,7 @@ set a = ##class(Utils.Singleton2).Get()</Description>
 
 <Method name="Test">
 <Description>
-do ##class(Utils.Singleton2).Test()</Description>
+Do ##class(Utils.Singleton2).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
 	Set a = ##class(Utils.Singleton2).Get()
