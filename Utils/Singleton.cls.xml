@@ -28,19 +28,10 @@ This method finds OREF for a current class if it exist in a current process</Des
 	Set Class = $ClassName()
 	Set OREF = $$$NULLOREF
 	
-	/// This doesn't work
-	/// &sql(Select TOP 1 OREF INTO :OREF FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
-	/// Why?
-	
-	&sql(Select Count(OREF) INTO :Count FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
+	&sql(Select Count(OREF), OREF INTO :Count, :OREFTemp FROM %SYSTEM.OBJ_ObjectList() WHERE ClassName = :Class)
 	
 	If Count'=0 {	
-		#Dim ResultSet As %SQL.StatementResult
-		Set Query = "Select TOP 1 OREF from %SYSTEM.OBJ_ObjectList() where ClassName = ?"
-		Set ResultSet = ##class(%SQL.Statement).%ExecDirect(, Query, Class)
-		If ResultSet.%Next() {
-			Set OREF = ResultSet.OREF
-		}
+		Set OREF = OREFTemp
 	}
 	Return OREF
 ]]></Implementation>
