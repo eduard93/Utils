@@ -7,21 +7,66 @@ do $system.OBJ.Compile("Utils.Generator")</Description>
 <Abstract>1</Abstract>
 <TimeCreated>64018,66974.425994</TimeCreated>
 
-<Method name="B">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[	s ^a = 1
-]]></Implementation>
-</Method>
-
 <Method name="A">
 <ClassMethod>1</ClassMethod>
 <CodeMode>objectgenerator</CodeMode>
-<GenerateAfter>B</GenerateAfter>
-<PlaceAfter>B</PlaceAfter>
 <Implementation><![CDATA[
-	k ^a
-	do ..B()
+	Do %class.XDatas.Clear()
+	Set xdata = ##class(%Dictionary.XDataDefinition).%New()
+	Set xdata.Name = "xdataname"
+	Do xdata.Data.Write("<time>"_$zdt($h)_"</time>")
+	Do %class.XDatas.Insert(xdata)
+	Do %class.%Save()
 ]]></Implementation>
 </Method>
+
+<Method name="ListDemo">
+<Description>
+do ##class(Utils.Generator).ListDemo()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pIterations=10000</FormalSpec>
+<Implementation><![CDATA[
+    #define START(%msg) Write %msg Set start = $zh
+    #define END Write ($zh - start)," seconds",!
+    
+    Set list = $lb(1,2,3,4,5,6,7,8,9)
+    $$$START("Getting first element in list "_pIterations_" times: ")
+    For i=1:1:pIterations {
+        Set a = $List(list,1)
+    }
+    $$$END
+    
+    $$$START("Getting third element in list "_pIterations_" times: ")
+    For i=1:1:pIterations {
+        Set a = $List(list)
+    }
+    $$$END
+]]></Implementation>
+</Method>
+
+<Method name="StrToArr">
+<Description>
+do ##class(Utils.Generator).StrToArr()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>string,del=",",*arr</FormalSpec>
+<Implementation><![CDATA[
+	Set tString = "12,34,56"
+
+	Set tPosition = 0
+	do {
+		Set tNewPosition = $Find(tString,",",tPosition)
+		Set tValue = $Select(tNewPosition'=0:$Extract(tString,tPosition,tNewPosition-2),1:$Extract(tString,tPosition,*))
+		//zw  w !,"________",!
+		Set tPosition = tNewPosition
+		w tValue,!
+		
+	}While tPosition '=0
+]]></Implementation>
+</Method>
+
+<XData name="xdataname">
+<Data><![CDATA[<time>05/12/2016 23:33:45</time>
+]]></Data>
+</XData>
 </Class>
 </Export>

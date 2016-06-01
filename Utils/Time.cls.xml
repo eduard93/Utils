@@ -108,5 +108,76 @@ ClassMethod Try()
 }*/
 ]]></Content>
 </UDLText>
+
+<Method name="addClassesFromPackage">
+<Description>
+do ##class(Utils.Time).addClassesFromPackage("%SYSTEM.")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pkg:%String</FormalSpec>
+<Implementation><![CDATA[
+	#dim result as %SQL.StatementResult
+	
+	set sql = "SELECT id FROM %Dictionary.ClassDefinition WHERE id %STARTSWITH ?"	
+	set result = ##class(%SQL.Statement).%ExecDirect(, sql,	pkg _ ".")
+	
+	if (result.%SQLCODE) {
+		set msg = "failed to retrieve list of classes from package" _ pkg
+		throw ##class(%Exception.SQL).CreateFromSQLCODE(result.%SQLCODE, msg)
+	}
+	
+	while result.%Next() {
+		set id = result.id
+		write id,!
+		//do ..classList.Insert(id)
+	}
+	
+	/*
+	
+	#dim position as %Integer
+	#dim value as %CacheString
+	
+	set position = ""
+	
+	while (1) {
+		set value = result.%NextOutputValue(.position)
+		if (position = "") {
+			return
+		}
+		w value, !
+		//do ..classList.Insert(value)
+	}*/
+]]></Implementation>
+</Method>
+
+<Method name="uts">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>stamp:%TimeStamp</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[
+	s startday=$zdh("1970-01-01 00:00:00",3)
+	s endday=$zdh(stamp,3)
+	s endtime=$p($zdth(stamp,3),",",2)
+	s diffday=endday - startday
+	s secs=((diffday * 60 * 60 * 24) + endtime)
+	quit secs
+]]></Implementation>
+</Method>
+
+<Method name="chr">
+<Description>
+Unix timestamp to ODBC</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>unixstamp:%Integer</FormalSpec>
+<ReturnType>%TimeStamp</ReturnType>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[
+	s startday=$zdh("1970-01-01 00:00:00",3)
+	s endday=(unixstamp \ (60 * 60 * 24))
+	s endtime=(unixstamp # (60 * 60 * 24))
+	s totalday=endday + startday
+	quit $zdt(totalday_","_endtime, 3)
+]]></Implementation>
+</Method>
 </Class>
 </Export>
