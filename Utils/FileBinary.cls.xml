@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.FileBinary">
+<TimeCreated>64079,73847.30312</TimeCreated>
+
+<Method name="Test">
+<Description>
+do ##class(Utils.FileBinary).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>filename="c:\myfile.txt"</FormalSpec>
+<Implementation><![CDATA[
+	Do ##class(%File).%Delete(filename)
+	Set BinaryData = $System.Encryption.SHAHash(512,"123qwertyasdfg")
+	
+	Set Stream = ##class(%Stream.FileBinary).%New()
+	Set st = Stream.LinkToFile(filename)
+	Do Stream.Write(BinaryData)
+	Do Stream.%Save()
+	Kill (BinaryData, filename)
+	
+	Set Stream = ##class(%Stream.FileBinary).%New()
+	Set st = Stream.LinkToFile(filename)
+	Set ReadData = ""
+	While 'Stream.AtEnd {
+		Set ReadData = ReadData _ Stream.Read()
+	}
+	
+	Write ReadData = BinaryData
+]]></Implementation>
+</Method>
+</Class>
+</Export>
