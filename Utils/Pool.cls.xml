@@ -35,7 +35,7 @@ w $System.Status.GetErrorText(##class(Utils.Pool).AddToPool(1, 1))</Description>
 <Implementation><![CDATA[
 	Set st = $$$OK
 	If ..PoolExists(PoolName) {
-		If '..IsInPool(PoolName, Element) {
+		If '..NotInPool(PoolName, Element) {
 			Set $$$Pool(PoolName, Element) = ""
 			Set $$$Pool(PoolName) = $$$Pool(PoolName) + 1
 		}
