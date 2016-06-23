@@ -8,6 +8,7 @@ Utils.CustomQueryStatic.cls
 Utils.Encode.cls
 Utils.Error.cls
 Utils.FileBinary.cls
+Utils.FuncIndex.cls
 Utils.Generator.cls
 Utils.Global.cls
 Utils.Installer.cls
