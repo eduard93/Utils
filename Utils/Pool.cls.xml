@@ -46,17 +46,31 @@ w $System.Status.GetErrorText(##class(Utils.Pool).AddToPool(1, 1))</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="IsInPool">
+<Method name="InPool">
 <Description>
 Check that element is in pool
-w ##class(Utils.Pool).IsInPool(1, 1)</Description>
+w ##class(Utils.Pool).InPool(1, 1)</Description>
 <ClassMethod>1</ClassMethod>
 <CodeMode>expression</CodeMode>
 <FormalSpec>PoolName:%String,Element:%Integer</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
-<SqlName>IsInPool</SqlName>
+<SqlName>InPool</SqlName>
 <SqlProc>1</SqlProc>
 <Implementation><![CDATA[$Data($$$Pool(PoolName, Element))=1
+]]></Implementation>
+</Method>
+
+<Method name="NotInPool">
+<Description>
+Check that element is not in pool
+w ##class(Utils.Pool).NotInPool(1, 1)</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>PoolName:%String,Element:%Integer</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<SqlName>NotInPool</SqlName>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[$Data($$$Pool(PoolName, Element))'=1
 ]]></Implementation>
 </Method>
 
