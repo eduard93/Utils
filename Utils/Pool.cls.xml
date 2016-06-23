@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.Pool">
+<Abstract>1</Abstract>
+<IncludeCode>Utils,%occErrors</IncludeCode>
+<TimeCreated>64092,81715.72528</TimeCreated>
+
+<Method name="CreatePool">
+<Description>
+Create new pool
+w $System.Status.GetErrorText(##class(Utils.Pool).CreatePool(1))</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>PoolName:%String(MAXLEN=50)=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Return:((PoolName="") || ($Length(PoolName)>50)) $$$ERROR($$$GeneralError, "Empty or long pool name")
+	Return:..PoolExists(PoolName) $$$ERROR($$$GeneralError, "Pool already exists")
+	Lock +$$$Pool(PoolName):0 
+ 	If '$TEST {  
+ 		Return $$$ERROR($$$GeneralError, "Cannot lock the pool " _ PoolName)
+ 	}
+ 	Kill $$$Pool(PoolName)
+ 	Set $$$Pool(PoolName) = 0
+ 	Return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="AddToPool">
+<Description>
+Add unique element to existing pool
+w $System.Status.GetErrorText(##class(Utils.Pool).AddToPool(1, 1))</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>PoolName:%String,Element:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set st = $$$OK
+	If ..PoolExists(PoolName) {
+		If '..IsInPool(PoolName, Element) {
+			Set $$$Pool(PoolName, Element) = ""
+			Set $$$Pool(PoolName) = $$$Pool(PoolName) + 1
+		}
+	} Else {
+		Set st = $$$ERROR($$$GeneralError, "Pool does not exist")
+	}
+	Return st
+]]></Implementation>
+</Method>
+
+<Method name="IsInPool">
+<Description>
+Check that element is in pool
+w ##class(Utils.Pool).IsInPool(1, 1)</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>PoolName:%String,Element:%Integer</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<SqlName>IsInPool</SqlName>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[$Data($$$Pool(PoolName, Element))=1
+]]></Implementation>
+</Method>
+
+<Method name="PoolExists">
+<Description>
+Check that pool exists</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>PoolName:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[$Data($$$Pool(PoolName))
+]]></Implementation>
+</Method>
+
+<Method name="DeletePool">
+<Description>
+Delete existing pool
+w $System.Status.GetErrorText(##class(Utils.Pool).DeletePool(1))</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>PoolName:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Return:((PoolName="") || ($Length(PoolName)>50)) $$$ERROR($$$GeneralError, "Empty or long pool name")
+	Return:'..PoolExists(PoolName) $$$ERROR($$$GeneralError, "Pool does not exist") 
+ 	Kill $$$Pool(PoolName)
+ 	Lock -$$$Pool(PoolName)
+ 	Return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>

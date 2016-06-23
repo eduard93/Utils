@@ -21,6 +21,7 @@ Utils.OID.cls
 Utils.Param.cls
 Utils.Pattern.cls
 Utils.Persistent.cls
+Utils.Pool.cls
 Utils.Projection.cls
 Utils.Request.cls
 Utils.Serial.cls
@@ -29,3 +30,4 @@ Utils.Singleton.cls
 Utils.Singleton2.cls
 Utils.Stack.cls
 Utils.Time.cls
+Utils.inc
