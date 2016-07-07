@@ -42,17 +42,26 @@ Do ##class(Utils.GetStored).Main(100)</Description>
 	Set TimeB = EndB - StartB
 	
 	Set StartC = $Piece($Now(),",",2)
-	Do ..Global(Count)
+	Do ..SQL(Count)
 	Set EndC = $Piece($Now(),",",2)
 	Set TimeC = EndC - StartC
+	
+	Set StartD = $Piece($Now(),",",2)
+	Do ..Global(Count)
+	Set EndD = $Piece($Now(),",",2)
+	Set TimeD = EndD - StartD
 	
 	Write "Iterations: ",Count,!
 	Write "Object access: ",TimeA,!
 	Write "GetStored access: ",TimeB,!
-	Write "Global access: ",TimeC,!
+	Write "SQL access: ",TimeC,!
+	Write "Global access: ",TimeD,!
 	Write "Object access takes ",$FN(TimeA/TimeB*100,"",2) _ "% of GetStored time",!
-	Write "Object access takes ",$FN(TimeA/TimeC*100,"",2) _ "% of Global time",!
-	Write "GetStored access takes ",$FN(TimeB/TimeC*100,"",2) _ "% of Global time",!,!
+	Write "Object access takes ",$FN(TimeA/TimeC*100,"",2) _ "% of SQL time",!
+	Write "Object access takes ",$FN(TimeA/TimeD*100,"",2) _ "% of Global time",!
+	Write "GetStored access takes ",$FN(TimeB/TimeC*100,"",2) _ "% of SQL time",!
+	Write "GetStored access takes ",$FN(TimeB/TimeD*100,"",2) _ "% of Global time",!
+	Write "SQL access takes ",$FN(TimeC/TimeD*100,"",2) _ "% of Global time",!,!
 ]]></Implementation>
 </Method>
 
@@ -75,6 +84,18 @@ Do ##class(Utils.GetStored).Main(100)</Description>
 <Implementation><![CDATA[
 	For i=1:1:Count {
 		Set Val = ..textGetStored($Random(..#POPSIZE-1)+1)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="SQL">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Count=100</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	For i=1:1:Count {
+		Set Id = $Random(..#POPSIZE-1)+1 
+		&sql(SELECT text INTO :Val FROM Utils.GetStored WHERE %ID = :Id) 
 	}
 ]]></Implementation>
 </Method>
