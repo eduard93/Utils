@@ -17,11 +17,11 @@
 Do ##class(Utils.GetStored).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-	do ..%KillExtent()
-	do ..Populate(..#POPSIZE, $$$NO, , , $$$NO)
-	do ..Main(100)
-	do ..Main(1000)
-	do ..Main(10000)
+	Do ..%KillExtent()
+	Do ..Populate(..#POPSIZE, $$$NO, , , $$$NO)
+	Do ..Main(100)
+	Do ..Main(1000)
+	Do ..Main(10000)
 ]]></Implementation>
 </Method>
 
