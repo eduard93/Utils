@@ -9,6 +9,7 @@ Utils.Encode.cls
 Utils.Error.cls
 Utils.FileBinary.cls
 Utils.FuncIndex.cls
+Utils.GeneratedMethods.cls
 Utils.Generator.cls
 Utils.GetStored.cls
 Utils.Global.cls
