@@ -13,6 +13,7 @@ Utils.GeneratedMethods.cls
 Utils.Generator.cls
 Utils.GetStored.cls
 Utils.Global.cls
+Utils.GlobalProp.cls
 Utils.Installer.cls
 Utils.Job.cls
 Utils.Length.cls
