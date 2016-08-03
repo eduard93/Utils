@@ -17,6 +17,7 @@ Utils.GlobalProp.cls
 Utils.Installer.cls
 Utils.Job.cls
 Utils.Length.cls
+Utils.MDX2JSON.cls
 Utils.Macro.cls
 Utils.Main.cls
 Utils.NS.cls

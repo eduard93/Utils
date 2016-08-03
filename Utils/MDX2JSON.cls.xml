@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.MDX2JSON">
+<Abstract>1</Abstract>
+<TimeCreated>64133,68824.397249</TimeCreated>
+
+<Parameter name="Username">
+</Parameter>
+
+<Parameter name="Password">
+</Parameter>
+
+<Parameter name="Https">
+<Type>%Boolean</Type>
+<Expression>$$$YES</Expression>
+</Parameter>
+
+<Parameter name="SSLConfiguration">
+<Default>DefaultSSL</Default>
+</Parameter>
+
+<Parameter name="Server">
+<Default>dcstats.intersystems.ru</Default>
+</Parameter>
+
+<Parameter name="Location">
+<Default>MDX2JSON/MDX</Default>
+</Parameter>
+
+<Parameter name="Namespace">
+<Default>COMMUNITY</Default>
+</Parameter>
+
+<Method name="Test">
+<Description>
+Do ##class(Utils.MDX2JSON).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#Dim Status As %Status = $$$OK
+	#Dim Request As %Net.HttpRequest = ##class(%Net.HttpRequest).%New()
+	Set Request.Username = ..#Username
+	Set Request.Password = ..#Password
+	Set Request.Https = ..#Https
+	Set Request.SSLConfiguration = ..#SSLConfiguration
+	Set Request.Server = ..#Server
+	Set Request.Location = ..#Location
+	Do Request.SetParam("Namespace", ..#Namespace)
+	Do Request.SetHeader("Accept", "application/json")
+	
+	Set Body = {}
+	Set Body.MDX = "SELECT NON EMPTY {%LABEL(ISNULL([DateDimension].[H1].[DayMonthYear].&[NOW],0),""Today"",""#""),%LABEL(AVG([DateDimension].[H1].[DayMonthYear].Members),""Average"",""#.##"")} ON 0 FROM [POST] %FILTER %OR({[DateDimension].[H1].[Year].&[NOW]})"
+
+	Do Request.EntityBody.Write(Body.$toJSON())
+	
+	Set Status = Request.Post(,Test)
+	
+	If Request.HttpResponse.StatusCode '= 200 {
+		Set Status = $$$ERROR($$$GeneralError, "Received " _ ..Request.HttpResponse.StatusCode _ " expected 200")	
+	}
+	
+	Quit:$$$ISERR(Status) Status
+
+	Set Result = ##class(%AbstractObject).$fromJSON(Request.HttpResponse.Data, .Status)
+	
+	// Result in json
+	Write:$IsObject(Result) Result.$toJSONFormat()
+	
+	Quit Status
+]]></Implementation>
+</Method>
+</Class>
+</Export>
