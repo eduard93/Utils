@@ -62,7 +62,7 @@ Do ##class(Utils.MDX2JSON).Test()</Description>
 	
 	Quit:$$$ISERR(Status) Status
 
-	Set Result = ##class(%AbstractObject).$fromJSON(Request.HttpResponse.Data, .Status)
+	Set Result = ##class(%AbstractObject).$fromJSON(Request.HttpResponse.Data)
 	
 	// Result in json
 	Write:$IsObject(Result) Result.$toJSONFormat()
