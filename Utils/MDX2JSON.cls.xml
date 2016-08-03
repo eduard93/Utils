@@ -57,7 +57,7 @@ Do ##class(Utils.MDX2JSON).Test()</Description>
 	Set Status = Request.Post(,Test)
 	
 	If Request.HttpResponse.StatusCode '= 200 {
-		Set Status = $$$ERROR($$$GeneralError, "Received " _ ..Request.HttpResponse.StatusCode _ " expected 200")	
+		Set Status = $$$ERROR($$$GeneralError, "Received " _ Request.HttpResponse.StatusCode _ " expected 200")	
 	}
 	
 	Quit:$$$ISERR(Status) Status
