@@ -21,10 +21,6 @@ do ##class(Utils.KPI).GenerateKPIClass("SELECT name, type FROM Sample.Per", "KPI
 <FormalSpec>SQL,Name,Class</FormalSpec>
 <Implementation><![CDATA[
 	#dim sc As %Status = $$$OK
-
-	set header = ##class(%Dictionary.XDataDefinition).IDKEYOpen($classname(), "KPI").Data.Read(10000)
-	do ..ReplaceRegexp(.header, "!!!1!!!", Name)
-	do ..ReplaceRegexp(.header, "!!!2!!!", SQL)
 	
 	if '##class(%Dictionary.ClassDefinition).%ExistsId(Class) {
 		set ClassObj = ##class(%Dictionary.ClassDefinition).%New(Class)
@@ -36,6 +32,10 @@ do ##class(Utils.KPI).GenerateKPIClass("SELECT name, type FROM Sample.Per", "KPI
 	}
 	
 	set KPI = ##class(%Dictionary.XDataDefinition).%New(Class _ ":KPI")
+	
+	set header = ##class(%Dictionary.XDataDefinition).IDKEYOpen($classname(), "KPI").Data.Read(10000)
+	do ..ReplaceRegexp(.header, "!!!1!!!", Name)
+	do ..ReplaceRegexp(.header, "!!!2!!!", SQL)
 	do KPI.Data.WriteLine(header) 
 	
 	set st = ##class(%SQL.Statement).%New()
