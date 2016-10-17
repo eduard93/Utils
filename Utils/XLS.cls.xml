@@ -55,10 +55,9 @@ Outputs Excel-compliant stream from sql into file. args are sql arguments</Descr
 		#dim column As %SQL.StatementColumn
 		set column = metadata.columns.GetAt(i)
 		do stream.Write("<td>" _ column.colName  _ "</td>")
-		
 		if column.IsNumeric() {
 			set class(i) = "class=""num"""
-		} elseif column.ODBCType = $$$SQLDATETIME {
+		} elseif ..isDate(column.ODBCType) {
 			set class(i) = "class=""date"""
 		} else {
 			set class(i) = "class=""text"""
@@ -76,6 +75,17 @@ Outputs Excel-compliant stream from sql into file. args are sql arguments</Descr
 	
 	do stream.Write("</table></body></html>")
 	return sc
+]]></Implementation>
+</Method>
+
+<Method name="isDate">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>odbcType:%Integer</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	return:odbcType=$$$ODBCTYPEtimestamp $$$YES
+	return:odbcType=$$$ODBCTYPEdate $$$YES
+	return $$$NO
 ]]></Implementation>
 </Method>
 
