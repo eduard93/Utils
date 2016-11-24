@@ -20,6 +20,10 @@ w ##class(Utils.XLSX).generateFileFromSQL(,"SELECT * FROM Sample.Person")</Descr
 	quit:$$$ISERR(sc) sc
 	
 	set sc = ..generateXLSXfromXML(xmlfile, file)
+	
+	do:$$$ISOK(sc) ##class(%File).Delete(xmlfile)	
+
+	
 	quit sc
 ]]></Implementation>
 </Method>
@@ -33,7 +37,6 @@ Outputs XML to be fed into %SYS.ZENReportExcelExporter Excel-compliant stream fr
 <Implementation><![CDATA[
 	#dim sc As %Status = $$$OK
 	set st = ##class(%SQL.Statement).%New()
-	//set st.%SelectMode = 1 // ODBC
 	set sc = st.%Prepare(sql)
 	quit:$$$ISERR(sc) sc
 	
@@ -97,6 +100,9 @@ Outputs XML to be fed into %SYS.ZENReportExcelExporter Excel-compliant stream fr
 	set DisplayLog= $$$NO
 	
 	set sc = ##class(%SYS.ZENReportExcelExporter).CommonExport(exportType, xmlfile, outputdir, outputfile, isMultiSheet, aggregateTag, reportName, logfile, suppresExcelHeaders, ExcelMode, DisplayLog)
+	
+	do:$$$ISOK(sc) ##class(%File).Delete(logfile)	
+	
 	return sc
 ]]></Implementation>
 </Method>
