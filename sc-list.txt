@@ -37,4 +37,5 @@ Utils.Singleton2.cls
 Utils.Stack.cls
 Utils.Time.cls
 Utils.XLS.cls
+Utils.XLSX.cls
 Utils.inc
