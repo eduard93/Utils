@@ -29,6 +29,7 @@ Utils.Pattern.cls
 Utils.Persistent.cls
 Utils.Pool.cls
 Utils.Projection.cls
+Utils.RLS.cls
 Utils.Request.cls
 Utils.Serial.cls
 Utils.SharedProperty.cls

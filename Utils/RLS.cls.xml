@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.RLS">
+<Super>%Persistent</Super>
+<TimeCreated>64267,84995.150945</TimeCreated>
+
+<Parameter name="ROWLEVELSECURITY">
+<Default>1</Default>
+</Parameter>
+
+<Property name="User">
+<Type>%String</Type>
+</Property>
+
+<Property name="Data">
+<Type>%String</Type>
+</Property>
+
+<Method name="%SecurityPolicy">
+<Description>
+Dynamically decide to give access
+Swaps _SYSTEM and dev access, give access to rows not with User = _SYSTEM or dev to anyone</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>User</FormalSpec>
+<ReturnType>%String</ReturnType>
+<SqlProc>1</SqlProc>
+<Implementation><![CDATA[
+	if User = "_SYSTEM" {
+		set access = "dev" 
+	} elseif User = "dev"  {
+		set access = "_SYSTEM"
+	} else {
+		set access = ""
+	}
+	return access
+]]></Implementation>
+</Method>
+
+<Method name="%OnOpen">
+<Description><![CDATA[
+EL - add rls from object access
+This callback method is invoked by the <METHOD>%Open</METHOD> method to 
+provide notification that the object specified by <VAR>oid</VAR> is being opened.
+
+<P>If this method returns an error then the object will not be opened.]]></Description>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	Set sc = $$$ERROR($$$GeneralError)
+	Set allow = $$$NO
+	Set access = ..%SecurityPolicy(..User)
+	
+	If ((access="") || (access[$username) || (access[$roles)) {
+		Set allow = $$$YES
+	}
+	
+	If allow = $$$YES {
+		Set sc = $$$OK
+	}
+	
+	Quit sc
+]]></Implementation>
+</Method>
+
+<Method name="Test">
+<Description>
+Do ##class(Utils.RLS).Test()
+SELECT * from Utils.RLS
+w $SYSTEM.Security.Login("dev",123)
+set obj = ##class(Utils.RLS).%OpenId(1)</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Do ..%KillExtent()
+	Do ..Add("dev", 1)
+	Do ..Add("UnknownUser", 2)
+	Do ..Add("_SYSTEM", 3)
+]]></Implementation>
+</Method>
+
+<Method name="Add">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>User,Data</FormalSpec>
+<Implementation><![CDATA[
+	Set obj = ..%New(User, Data)
+	Return obj.%Save()
+]]></Implementation>
+</Method>
+
+<Method name="%OnNew">
+<FormalSpec>User,Data</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	Set ..User = User
+	Set ..Data = Data 
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Utils.RLSD</DataLocation>
+<DefaultData>RLSDefaultData</DefaultData>
+<IdLocation>^Utils.RLSD</IdLocation>
+<IndexLocation>^Utils.RLSI</IndexLocation>
+<StreamLocation>^Utils.RLSS</StreamLocation>
+<Data name="RLSDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>%READERLIST</Value>
+</Value>
+<Value name="3">
+<Value>Access</Value>
+</Value>
+<Value name="4">
+<Value>data</Value>
+</Value>
+<Value name="5">
+<Value>Data</Value>
+</Value>
+<Value name="6">
+<Value>User</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
