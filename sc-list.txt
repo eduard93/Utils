@@ -31,6 +31,7 @@ Utils.Pool.cls
 Utils.Projection.cls
 Utils.RLS.cls
 Utils.Request.cls
+Utils.SQL.cls
 Utils.Serial.cls
 Utils.SharedProperty.cls
 Utils.Singleton.cls

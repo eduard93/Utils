@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.SQL">
+<Abstract>1</Abstract>
+<TimeCreated>63994,43346.467539</TimeCreated>
+
+<Method name="getSQL">
+<Description>
+w ##class(Utils.SQL).getSQL("Comments")</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name:%String,removeNL=$$$NO</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+	
+	set query = ##class(%Dictionary.QueryDefinition).IDKEYOpen($classname(), name,, .sc)
+	throw:$$$ISERR(sc) ##class(%Exception.StatusException).CreateFromStatus(sc)
+
+	set sql = query.SqlQuery
+	set:(removeNL = $$$YES) sql = $replace(sql, $$$NL, " ")
+	return sql
+]]></Implementation>
+</Method>
+
+<Query name="ProductionClassesSettings">
+<Description>
+BS, BP, BO settings</Description>
+<Type>%Query</Type>
+<FormalSpec>production</FormalSpec>
+<SqlQuery>SELECT
+  prop.parent Class,
+  prop.name Setting,
+  TRIM('"' FROM prop.InitialExpression) Default,
+  prop.Description Description
+FROM "%Dictionary".PropertyDefinition prop
+  JOIN "%Dictionary".CompiledParameter par ON par.parent = prop.parent AND par.Name = 'SETTINGS'
+  JOIN "%Dictionary".CompiledClass cls ON prop.parent = cls.Name
+WHERE cls.Name LIKE ? and
+      par."_Default" LIKE '%' || prop.Name || '%'
+ORDER BY Class, Setting</SqlQuery>
+</Query>
+
+<Query name="Comments">
+<Description>
+Get comments from mysql db</Description>
+<Type>%Query</Type>
+<SqlQuery>SELECT
+  c.cid                    AS Id,
+  c.nid                    AS Nid,
+  FROM_UNIXTIME(c.created) AS Created,
+  c.uid                    AS Uid,
+  IFNULL(vv.average, 0)        AS AvgVote,
+  IFNULL(vv.amount, 0)     AS VotesAmount,
+  body.comment_body_value  AS Text,
+  'comment'                AS Type
+FROM comment AS c
+  LEFT OUTER JOIN node ON node.nid = c.nid
+  INNER JOIN field_data_field_forum_ref AS ref ON ref.entity_id = node.nid
+  LEFT OUTER JOIN field_data_comment_body AS body ON c.cid = body.entity_id
+  LEFT OUTER JOIN (SELECT
+                     entity_id,
+                     SUM(value) AS average, 
+                     COUNT (1) AS amount
+                   FROM votingapi_vote
+                   WHERE entity_type = 'comment'
+                   GROUP BY entity_id) AS vv ON vv.entity_id = c.cid
+WHERE
+  node.status = 1
+  AND node.type IN ('code_package', 'documentation', 'learning_track', 'video', 'post')
+GROUP BY c.cid</SqlQuery>
+</Query>
+</Class>
+</Export>
