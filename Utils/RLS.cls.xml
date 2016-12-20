@@ -8,94 +8,53 @@
 <Default>1</Default>
 </Parameter>
 
-<Property name="User">
+<Property name="%READERLIST">
 <Type>%String</Type>
-</Property>
-
-<Property name="Data">
-<Type>%String</Type>
-</Property>
-
-<Method name="%SecurityPolicy">
-<Description>
-Dynamically decide to give access
-Swaps _SYSTEM and dev access, give access to rows not with User = _SYSTEM or dev to anyone</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>User</FormalSpec>
-<ReturnType>%String</ReturnType>
-<SqlProc>1</SqlProc>
-<Implementation><![CDATA[
-	if User = "_SYSTEM" {
-		set access = "dev" 
-	} elseif User = "dev"  {
-		set access = "_SYSTEM"
-	} else {
-		set access = ""
-	}
-	return access
-]]></Implementation>
-</Method>
-
-<Method name="%OnOpen">
-<Description><![CDATA[
-EL - add rls from object access
-This callback method is invoked by the <METHOD>%Open</METHOD> method to 
-provide notification that the object specified by <VAR>oid</VAR> is being opened.
-
-<P>If this method returns an error then the object will not be opened.]]></Description>
+<Calculated>1</Calculated>
 <Private>1</Private>
-<ReturnType>%Status</ReturnType>
-<ServerOnly>1</ServerOnly>
+<SqlComputeCode>s {*} = ^test</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Property name="f1">
+<Type>%String</Type>
+</Property>
+
+<Property name="f2">
+<Type>%Integer</Type>
+</Property>
+
+<Method name="Fill">
+<Description>
+d ##class(Utils.RLS).Fill()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>N=3</FormalSpec>
 <Implementation><![CDATA[
-	Set sc = $$$ERROR($$$GeneralError)
-	Set allow = $$$NO
-	Set access = ..%SecurityPolicy(..User)
-	
-	If ((access="") || (access[$username) || (access[$roles)) {
-		Set allow = $$$YES
-	}
-	
-	If allow = $$$YES {
-		Set sc = $$$OK
-	}
-	
-	Quit sc
+  d ..%KillExtent()
+  f i=1:1:N &sql(insert into Utils.RLS(f1,f2) values('f'||:i,:i))
+  
+  zw ^demo.testD,^demo.testI w !
+  
+  d ..Test()
 ]]></Implementation>
 </Method>
 
 <Method name="Test">
-<Description>
-Do ##class(Utils.RLS).Test()
-SELECT * from Utils.RLS
-w $SYSTEM.Security.Login("dev",123)
-set obj = ##class(Utils.RLS).%OpenId(1)</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-	Do ..%KillExtent()
-	Do ..Add("dev", 1)
-	Do ..Add("UnknownUser", 2)
-	Do ..Add("_SYSTEM", 3)
-]]></Implementation>
-</Method>
+  d $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$YES), $system.SQL.PurgeForTable($classname())
+  
+  w "yes 1) -----",!!
+  d ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
+  w "yes 2) -----",!!
+  d ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
 
-<Method name="Add">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>User,Data</FormalSpec>
-<Implementation><![CDATA[
-	Set obj = ..%New(User, Data)
-	Return obj.%Save()
-]]></Implementation>
-</Method>
-
-<Method name="%OnNew">
-<FormalSpec>User,Data</FormalSpec>
-<Private>1</Private>
-<ReturnType>%Status</ReturnType>
-<ServerOnly>1</ServerOnly>
-<Implementation><![CDATA[
-	Set ..User = User
-	Set ..Data = Data 
-	Quit $$$OK
+  d $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$NO), $system.SQL.PurgeForTable($classname())
+  
+  w "no 1) -----",!!
+  d ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
+  w "no 2) -----",!!
+  d ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
 ]]></Implementation>
 </Method>
 
@@ -111,19 +70,10 @@ set obj = ##class(Utils.RLS).%OpenId(1)</Description>
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>%READERLIST</Value>
+<Value>f1</Value>
 </Value>
 <Value name="3">
-<Value>Access</Value>
-</Value>
-<Value name="4">
-<Value>data</Value>
-</Value>
-<Value name="5">
-<Value>Data</Value>
-</Value>
-<Value name="6">
-<Value>User</Value>
+<Value>f2</Value>
 </Value>
 </Data>
 </Storage>
