@@ -37,6 +37,7 @@ Utils.SharedProperty.cls
 Utils.Singleton.cls
 Utils.Singleton2.cls
 Utils.Stack.cls
+Utils.StreamTrigger.cls
 Utils.Time.cls
 Utils.XLS.cls
 Utils.XLSX.cls

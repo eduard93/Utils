@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.StreamTrigger">
+<Super>%Persistent</Super>
+<TimeCreated>64273,83303.89937</TimeCreated>
+
+<Property name="Stream">
+<Type>%Stream.GlobalCharacter</Type>
+</Property>
+
+<Method name="Test">
+<Description>
+do ##class(Utils.StreamTrigger).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	kill ^Utils.StreamTriggerDebug,^Utils.StreamTriggerS,^Utils.StreamTriggerI,^Utils.StreamTriggerD
+	do ..%KillExtent()
+	&sql(INSERT INTO Utils.StreamTrigger VALUES ('texttext'))
+	&sql(UPDATE Utils.StreamTrigger SET Stream =('texttext2'))
+	zw ^Utils.StreamTriggerDebug
+]]></Implementation>
+</Method>
+
+<Trigger name="TrigD">
+<Code>	New SQLCODE,%ROWID,%ROWCOUNT
+	
+	Set key = $i(^Utils.StreamTriggerDebug)
+	Set ^Utils.StreamTriggerDebug(key,"old") = {Stream*O}
+	Set ^Utils.StreamTriggerDebug(key,"old","value") = ##class(%Stream.GlobalCharacter).%Open({Stream*O}).Read($$$MaxCacheInt)
+	Set ^Utils.StreamTriggerDebug(key,"new") = {Stream*N}</Code>
+<Event>UPDATE</Event>
+<Time>AFTER</Time>
+<Foreach>row</Foreach>
+<Language>cache</Language>
+</Trigger>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Utils.StreamTriggerD</DataLocation>
+<DefaultData>StreamTriggerDefaultData</DefaultData>
+<IdLocation>^Utils.StreamTriggerD</IdLocation>
+<IndexLocation>^Utils.StreamTriggerI</IndexLocation>
+<StreamLocation>^Utils.StreamTriggerS</StreamLocation>
+<Data name="StreamTriggerDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Stream</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
