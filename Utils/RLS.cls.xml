@@ -12,49 +12,63 @@
 <Type>%String</Type>
 <Calculated>1</Calculated>
 <Private>1</Private>
-<SqlComputeCode>s {*} = ^test</SqlComputeCode>
+<SqlComputeCode>s {*} = ##class(Utils.RLS).GetAccess({ID})</SqlComputeCode>
 <SqlComputed>1</SqlComputed>
 </Property>
 
-<Property name="f1">
+<Property name="data">
 <Type>%String</Type>
 </Property>
 
-<Property name="f2">
-<Type>%Integer</Type>
-</Property>
+<Method name="GetAccess">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Id</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	return:Id>3 "_SYSTEM"
+	return "%All"
+]]></Implementation>
+</Method>
 
 <Method name="Fill">
 <Description>
-d ##class(Utils.RLS).Fill()</Description>
+do ##class(Utils.RLS).Fill()</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>N=3</FormalSpec>
+<FormalSpec>N=5</FormalSpec>
 <Implementation><![CDATA[
-  d ..%KillExtent()
-  f i=1:1:N &sql(insert into Utils.RLS(f1,f2) values('f'||:i,:i))
-  
-  zw ^demo.testD,^demo.testI w !
-  
-  d ..Test()
+	do ..%KillExtent()
+	for i=1:1:N {
+		&sql(insert into Utils.RLS(data) values(:i))
+	}
+	do $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$NO)
+	do $system.SQL.PurgeForTable($classname())
+
+	zw ^demo.testD,^demo.testI
+
+	do ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display()
 ]]></Implementation>
 </Method>
 
 <Method name="Test">
+<Description>
+do ##class(Utils.RLS).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-  d $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$YES), $system.SQL.PurgeForTable($classname())
-  
-  w "yes 1) -----",!!
-  d ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
-  w "yes 2) -----",!!
-  d ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
+	do $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$YES)
+	do $system.SQL.PurgeForTable($classname())
 
-  d $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$NO), $system.SQL.PurgeForTable($classname())
-  
-  w "no 1) -----",!!
-  d ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
-  w "no 2) -----",!!
-  d ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
+	write "yes 1) -----",!!
+	do ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
+	write "yes 2) -----",!!
+	do ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
+
+	do $SYSTEM.SQL.SetMapSelectability($classname(),"%RLI",$$$NO)
+	do $system.SQL.PurgeForTable($classname())
+
+	write "no 1) -----",!!
+	do ##class(%SQL.Statement).%ExecDirect(,"select * from %IGNOREINDEX %RLI "_$classname()).%Display() w !!
+	write "no 2) -----",!!
+	do ##class(%SQL.Statement).%ExecDirect(,"select * from "_$classname()).%Display() w !!
 ]]></Implementation>
 </Method>
 
@@ -70,10 +84,7 @@ d ##class(Utils.RLS).Fill()</Description>
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>f1</Value>
-</Value>
-<Value name="3">
-<Value>f2</Value>
+<Value>data</Value>
 </Value>
 </Data>
 </Storage>
