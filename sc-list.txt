@@ -2,6 +2,8 @@ Utils
 Utils.B.cls
 Utils.Browser.cls
 Utils.CallArgs.cls
+Utils.Compararator.cls
+Utils.CompararatorItem.cls
 Utils.CustomQuery.cls
 Utils.CustomQueryRS.cls
 Utils.CustomQueryStatic.cls
