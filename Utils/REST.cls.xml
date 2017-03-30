@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.REST">
+<Super>%CSP.REST</Super>
+<TimeCreated>64372,70330.171017</TimeCreated>
+
+<XData name="UrlMap">
+<Data><![CDATA[
+<Routes>
+   <Route Url="/file" Method="GET" Call="GET"/>
+ </Routes>
+]]></Data>
+</XData>
+
+<Method name="GET">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set name = "Z:\iknowentitybrowsericons.woff"
+	quit ..serve(name)
+]]></Implementation>
+</Method>
+
+<Method name="serve">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+    #dim %response As %CSP.Response
+	kill %request.Data
+	set %request.Data("STREAMOID",1)= ##class(%CSP.StreamServer).Encrypt(##class(%CSP.StreamServer).GetOidForFile(name))
+	if ##class(%CSP.StreamServer).OnPreHTTP() {
+		set %response.Headers("Content-Disposition")="attachment; filename*=UTF-8''" _ ##class(%CSP.Page).EscapeURL(name, "UTF8")
+		set sc = ##class(%CSP.StreamServer).OnPage()
+	}
+
+	quit sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>

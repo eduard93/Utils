@@ -34,6 +34,7 @@ Utils.Pattern.cls
 Utils.Persistent.cls
 Utils.Pool.cls
 Utils.Projection.cls
+Utils.REST.cls
 Utils.RLS.cls
 Utils.Request.cls
 Utils.SQL.cls
