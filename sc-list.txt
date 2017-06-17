@@ -43,6 +43,7 @@ Utils.SharedProperty.cls
 Utils.Singleton.cls
 Utils.Singleton2.cls
 Utils.Stack.cls
+Utils.StorageConverter.cls
 Utils.StreamTrigger.cls
 Utils.Temp.cls
 Utils.Time.cls
