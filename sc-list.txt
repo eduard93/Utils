@@ -27,6 +27,8 @@ Utils.Length.cls
 Utils.MDX2JSON.cls
 Utils.Macro.cls
 Utils.Main.cls
+Utils.MyQuery.cls
+Utils.MyQueryTest.cls
 Utils.NS.cls
 Utils.OID.cls
 Utils.Param.cls

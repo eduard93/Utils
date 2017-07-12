@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.MyQuery">
+<Super>%SQLQuery</Super>
+<TimeCreated>64476,54886.232684</TimeCreated>
+
+<Method name="GetText">
+<Description>
+GetText is a method that is used to get query text as a %String</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<ReturnType>%String</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	if %mode="method" quit $$$OK
+	$$$comMemberKeyGetLvar(query,%classname,$$$cCLASSquery,%property,$$$cQUERYsqlquery)
+	do %code.WriteLine("    quit " _ $$$quote(query))
+	QUIT $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>
