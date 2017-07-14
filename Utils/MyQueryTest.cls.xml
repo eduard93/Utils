@@ -6,6 +6,7 @@
 <Query name="ABC">
 <Type>Utils.MyQuery</Type>
 <SqlQuery>SELECT 1</SqlQuery>
+<Parameter name="ROWSPEC" value="Text123:%String"/>
 </Query>
 
 <Method name="Test">
@@ -13,7 +14,9 @@
 do ##class(Utils.MyQueryTest).Test()</Description>
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-	write "Query text: ", ..ABCGetText(),!,!
+	$$$comMemberArrayGetLvar(rowspec,$classname(),$$$cCLASSquery,"ABC", $$$cQUERYparameter, "ROWSPEC")
+	w "ROWSPEC: ", rowspec,!
+	write "Query text: ", ..ABCGetText(),!
 	do ..ABCFunc().%Display()
 ]]></Implementation>
 </Method>
