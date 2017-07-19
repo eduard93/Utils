@@ -6,6 +6,7 @@ Utils.CallArgs.cls
 Utils.Compararator.cls
 Utils.CompararatorItem.cls
 Utils.CustomQuery.cls
+Utils.CustomQuery2.cls
 Utils.CustomQueryRS.cls
 Utils.CustomQueryStatic.cls
 Utils.DeepSee.cls
