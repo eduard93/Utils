@@ -1,5 +1,6 @@
 Utils
 Utils.Annotations.cls
+Utils.AsyncREST.cls
 Utils.B.cls
 Utils.Browser.cls
 Utils.CallArgs.cls
