@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.DigitalOcean">
+<Description>
+Digital Ocean API. 
+Ratelimit: 5000 requests per hour.
+How-to: https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-api-v2
+Docs: https://developers.digitalocean.com/documentation/v2/
+To start using this class:
+  - Create SSLConfiguration DefaultSSL or change SSLConfiguration parameter to a name of a valid configuration
+  - Set ^DigitalOcean global to your access key value</Description>
+<TimeCreated>64666,49332.787409</TimeCreated>
+
+<Parameter name="LOG">
+<Type>%Boolean</Type>
+<Default>1</Default>
+</Parameter>
+
+<Parameter name="SSLConfiguration">
+<Default>DefaultSSL</Default>
+</Parameter>
+
+<Parameter name="Server">
+<Default>api.digitalocean.com</Default>
+</Parameter>
+
+<Method name="ForceResize">
+<Description>
+Call resize till it succeds.
+Do ##class(Utils.DigitalOcean).ForceResize()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>DropletId:%Integer,Size:%String="s-2vcpu-4gb",Disk:%Boolean=$$$NO</FormalSpec>
+<Implementation><![CDATA[
+	Try {
+		While 1 {
+			Kill ActionId
+			Do ..Log("Starting resize")
+			Set Status = ..Resize(DropletId, Size, Disk, .ActionId)
+			Do ..Log("ActionId: " _ ActionId)
+			If $$$ISERR(Status) {
+				Do ..LogStatus(Status)
+			} Else {
+				Set Completed = $$$NO
+				While Completed '= $$$YES {
+					Hang 0.7
+					Kill Result
+					Set Status = ..GetAction(ActionId, .Result)
+					
+					If $$$ISERR(Status) {
+						Do ..LogStatus(Status)
+					} Else {
+						Do ..Log("Current status: " _ $Get(Result))
+						
+						If ((Result = "completed")||(Result = "errored")) {
+							Set Completed = $$$YES
+							Return:(Result = "completed")
+						}
+					}
+				}
+			}
+		}
+	} Catch ex {
+		#Dim ex As %Exception.General
+		Do ..LogException(ex)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="Resize">
+<Description>
+Resize droplet. Returns action.
+https://developers.digitalocean.com/documentation/v2/#resize-a-droplet
+Do ##class(Utils.DigitalOcean).Resize(,1)</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>DropletId:%Integer,Size:%String="s-2vcpu-4gb",Disk:%Boolean=$$$NO,*ActionId:%Integer,Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#Dim Status As %Status = $$$OK
+	#Dim Request As %Net.HttpRequest = ..GetRequest()
+	#Dim Body As %DynamicObject
+	
+	Set Request.Location = "/v2/droplets/"_DropletId_"/actions"	
+	Set Body = {"type":"resize","size":(Size)}
+	
+	Do Body.%Set("disk", Disk, "boolean")
+	
+	Do Request.EntityBody.Write(Body.%ToJSON())
+	Quit:$$$ISERR(Status) Status
+	Set ActionId = Result.action.id	
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="GetActions">
+<Description>
+Get all actions. Pagesize = 5000 works.
+https://developers.digitalocean.com/documentation/v2/#actions
+Do ##class(Utils.DigitalOcean).GetActions()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Page:%Integer=1,PageSize:%Integer=25,*Result:%DynamicObject,Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Kill Result
+	#Dim Status As %Status = $$$OK
+	#Dim Request As %Net.HttpRequest = ..GetRequest()
+	
+	Do Request.SetParam("page", Page)
+	Do Request.SetParam("per_page", PageSize)
+	
+	Set Location = "/v2/actions/"
+	
+	Set Status = ..ExecuteRequest("GET", Location, .Result, Request, , Test)		
+	Quit:$$$ISERR(Status) Status
+
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="GetAction">
+<Description>
+Get information about action.
+https://developers.digitalocean.com/documentation/v2/#retrieve-an-existing-action
+Do ##class(Utils.DigitalOcean).GetStatus()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ActionId:%Integer,*Progress:%String(VALUELIST="in-progress,completed,errored,"),Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Kill Progress
+	#Dim Status As %Status = $$$OK
+	
+	Set Location = "/v2/actions/" _ ActionId
+	Set Status = ..ExecuteRequest("GET", Location, .Result, , , Test)	
+	Quit:$$$ISERR(Status) Status
+	Set Progress = Result.action.status
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="GetDroplet">
+<Description>
+Get information about droplet
+https://developers.digitalocean.com/documentation/v2/#retrieve-an-existing-droplet-by-id
+Do ##class(Utils.DigitalOcean).GetDroplet()</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>DropletId:%Integer,*Result:%DynamicObject,Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Kill Result
+	#Dim Status As %Status = $$$OK
+
+	Set Location = "/v2/droplets/" _ DropletId
+	Set Status = ..ExecuteRequest("GET", Location, .Result, , , Test)
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="GetRequest">
+<Description>
+Get basic request.</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Net.HttpRequest</ReturnType>
+<Implementation><![CDATA[
+	#Dim Request As %Net.HttpRequest = ##class(%Net.HttpRequest).%New()
+	Set Request.Https = $$$YES
+	Set Request.SSLConfiguration = ..#SSLConfiguration
+	Set Request.Server = ..#Server	
+	Set Request.ContentType = ##class(%CSP.REST).#CONTENTTYPEJSON
+	Do Request.SetHeader("Authorization", "Bearer " _ ..GetKey())
+	Quit Request
+]]></Implementation>
+</Method>
+
+<Method name="GetKey">
+<Description>
+Get Access Key
+https://www.digitalocean.com/community/tutorials/how-to-use-the-digitalocean-api-v2</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<ReturnType>%Net.HttpRequest</ReturnType>
+<Implementation><![CDATA[$Get(^DigitalOcean)
+]]></Implementation>
+</Method>
+
+<Method name="ExecuteRequest">
+<Description>
+Ececute request against DigitalOcean API.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Method:%String(VALUELIST="GET,POST,PUT,DELETE"),Location:%String,*Result:%DynamicObject,Request:%Net.HttpRequest=..GetRequest(),SuccessCode:%Integer={$Case(Method, "POST":201,:200)},Test:%Integer(MINVAL=0,MAXVAL=2)=0</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Kill Result
+	#Dim Status As %Status = $$$OK
+	Set Status = Request.Send(Method, Location, Test)
+	
+	If (Test '= 1) {
+		If (Request.HttpResponse.StatusCode '= SuccessCode) {
+			Set Status = $$$ERROR($$$GeneralError, $$$FormatText("Received %1 expected %2. Responce body: %3", Request.HttpResponse.StatusCode, SuccessCode, Request.HttpResponse.Data.Read($$$MaxStringLength)))
+		}
+		Set Result = {}.%FromJSON(Request.HttpResponse.Data)
+	}
+	
+	
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="LogException">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ex:%Exception.AbstractException</FormalSpec>
+<Implementation><![CDATA[	Do:(..#LOG) ..LogStatus(ex.AsStatus())
+]]></Implementation>
+</Method>
+
+<Method name="LogStatus">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>sc:%Status</FormalSpec>
+<Implementation><![CDATA[	Do:(..#LOG) ..Log($System.Status.GetErrorText(sc))
+]]></Implementation>
+</Method>
+
+<Method name="Log">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>msg:%String</FormalSpec>
+<Implementation><![CDATA[	Write:(..#LOG) $ZDATETIME($ZTIMESTAMP, 3, 1, 3) _ " " _ msg,!
+]]></Implementation>
+</Method>
+</Class>
+</Export>

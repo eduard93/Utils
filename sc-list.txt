@@ -11,6 +11,7 @@ Utils.CustomQuery2.cls
 Utils.CustomQueryRS.cls
 Utils.CustomQueryStatic.cls
 Utils.DeepSee.cls
+Utils.DigitalOcean.cls
 Utils.DocAPI.cls
 Utils.Encode.cls
 Utils.Error.cls
