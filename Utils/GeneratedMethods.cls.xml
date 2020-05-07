@@ -12,6 +12,14 @@
 <Type>%String</Type>
 </Property>
 
+<Property name="Date">
+<Type>%Date</Type>
+</Property>
+
+<Property name="Relative">
+<Type>GeneratedMethods</Type>
+</Property>
+
 <Index name="TextIndex">
 <Properties>Text</Properties>
 <Unique>1</Unique>
@@ -50,6 +58,31 @@ Do ##class(Utils.GeneratedMethods).Test()</Description>
 	Do ..TextIndexDelete(Text)
 	Set ObjExists = ..TextIndexExists(Text)
 	Zw ObjExists
+	Kill
+	
+	Write "___________",!
+	
+	Set Id = 1
+	Set Obj = ..%OpenId(Id)
+	
+	Write "Text: ",Obj.Text, !
+	Write "Text: ",Obj.TextGet(), !
+	
+	Write "Date: ",Obj.Date, !
+	Write "Date: ",Obj.DateLogicalToDisplay(Obj.Date), !
+	Write "Date: ",Obj.DateLogicalToOdbc(Obj.Date), !
+	Write "Date: ",Obj.DateOdbcToLogical("2020-01-02"), !
+	Write "Date: ",Obj.DateIsValid(Obj.DateNormalize($h)), !
+	
+	
+	Set Relative = 2
+	Do Obj.RelativeSetObjectId(Relative)
+	Write "Relative: ", Obj.RelativeGetObjectId(),!
+	Set RelObj = Obj.Relative
+	Do Obj.Relative.RelativeSetObject(Obj.RelativeGetObject())
+	Set RelRelObj = Obj.Relative.Relative
+	
+	zw RelObj,RelRelObj
 ]]></Implementation>
 </Method>
 
@@ -73,6 +106,12 @@ Do ##class(Utils.GeneratedMethods).Test()</Description>
 </Value>
 <Value name="2">
 <Value>Text</Value>
+</Value>
+<Value name="3">
+<Value>Date</Value>
+</Value>
+<Value name="4">
+<Value>Relative</Value>
 </Value>
 </Data>
 </Storage>
