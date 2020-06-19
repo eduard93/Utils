@@ -71,7 +71,8 @@ If stream does not exist it is created</Description>
 <FormalSpec><![CDATA[classes:%List,&definition:%Stream.Object]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	set:'$d(stream) stream = ##class(%Stream.GlobalCharacter).%New()
+	#dim sc As %Status = $$$OK
+	set:'$d(definition) definition = ##class(%Stream.GlobalCharacter).%New()
 	
 	// List of classes we already generated
 	set generated = ""
@@ -96,7 +97,7 @@ If stream does not exist it is created</Description>
 		do ..AppendToList(.classes, notGenerated)	
 	}
 	
-	do stream.Rewind()
+	do definition.Rewind()
 	
 	quit sc
 ]]></Implementation>
