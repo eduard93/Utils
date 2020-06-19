@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.YAML">
+<TimeCreated>65549,51243.411738</TimeCreated>
+
+<Parameter name="SwaggerRefBase">
+<Default>#/definitions/</Default>
+</Parameter>
+
+<Parameter name="StartIndent">
+<Default>1</Default>
+</Parameter>
+
+<Method name="Test">
+<Description>
+Test method
+do ##class(Utils.YAML).Test()</Description>
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set stream = ##class(%Stream.GlobalCharacter).%New()
+	
+	set classes = ..GetClasses()
+	
+	set sc = ..GenerateClasses(classes, .stream)
+	
+	if $$$ISERR(sc) {
+		write $System.Status.GetErrorText(sc)
+	} else {
+		write "ok"
+	}
+	
+	write !,"stream:",!
+	do stream.OutputToDevice()
+]]></Implementation>
+</Method>
+
+<Method name="GetClasses">
+<Description>
+Get Sample classes list</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%List</ReturnType>
+<Implementation><![CDATA[
+	set list = ""
+	set rs = ..ClassesFunc("Ens.")
+	while rs.%Next() {
+		set list = list _ $lb(rs.Name)
+	}
+	
+	quit list
+]]></Implementation>
+</Method>
+
+<Query name="Classes">
+<Description>
+Get all persistent classes in a package
+do ##class(Utils.YAML).ClassesFunc("REST.Test").%Display()</Description>
+<Type>%SQLQuery</Type>
+<FormalSpec>package</FormalSpec>
+<SqlQuery>SELECT Name 
+FROM %Dictionary.ClassDefinition_SubclassOf('%Persistent')
+WHERE Name %STARTSWITH :package</SqlQuery>
+</Query>
+
+<Method name="GenerateClasses">
+<Description>
+Main entry point
+Generate Swagger definition from a list of classes
+Result is written into stream
+If stream does not exist it is created</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[classes:%List,&definition:%Stream.Object]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set:'$d(stream) stream = ##class(%Stream.GlobalCharacter).%New()
+	
+	// List of classes we already generated
+	set generated = ""
+	
+	// Iterate over all classes we need to generate
+	while $ll(classes)>0 {
+		// Get the first class
+		set class = $lg(classes, 1)
+		
+		// Generate the class definition and produce a list of dependencies
+		set sc = ..GenerateClass(class, .definition, .dependencies)
+		quit:$$$ISERR(sc)
+		
+		// Move class to the generated list (from the list of classes we need to generate)
+		set generated = generated _ $lb(class)
+		set $li(classes,1,1)=""
+		
+		// Find out which class dependencies are not yet generated
+		set notGenerated = ..ExceptList(dependencies, generated)
+		
+		// Append not generated classes to generation list (if they are not already on the generation list)
+		do ..AppendToList(.classes, notGenerated)	
+	}
+	
+	do stream.Rewind()
+	
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="AppendToList">
+<Description>
+Add items from new list to initial list
+Only adds items not present in initial list</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&initial:%List,new:%List]]></FormalSpec>
+<Implementation><![CDATA[
+	set ptr=0
+	while $listnext(new, ptr, class) {
+		set:'$lf(initial, class) initial = initial _ $lb(class)	
+	}
+]]></Implementation>
+</Method>
+
+<Method name="ExceptList">
+<Description>
+Remove new list from initial list
+Assume new list is longer</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>initial:%List,new:%List</FormalSpec>
+<ReturnType>%List</ReturnType>
+<Implementation><![CDATA[
+	set except = ""
+	set ptr=0
+	while $listnext(initial, ptr, class) {
+		set:'$lf(new, class) except = except _ $lb(class)
+	}
+	quit except
+]]></Implementation>
+</Method>
+
+<Method name="GenerateClass">
+<Description>
+Generate Swagger definition for one class
+class - class to generate description from.
+definition - generated swagger definition is placed here.
+dependencies - list of classes our class depends on.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class:%Dictionary.CacheClassname,definition:%Stream.Object,*dependencies:%List</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+	set dependencies = ""
+	do ..GenerateInitial(class, definition)
+	
+	// Iterate over class properties
+	set property=$$$comMemberNext(class, $$$cCLASSproperty, "")
+	while property'="" {
+		if (..OutputProperty(class, property)) {
+			set sc = ..GenerateProperty(class, property, definition)
+			quit:$$$ISERR(sc)
+			
+			// Add current property type to dependencies if needed
+			do ..AddDependency(class, property, .dependencies)
+		}
+				
+		// Get next property
+		set property=$$$comMemberNext(class, $$$cCLASSproperty, property)		
+	}
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="AddDependency">
+<Description>
+Add class property type to dependencies if it's not there already and it's required</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[class:%Dictionary.CacheClassname,property:%String,&dependencies:%String]]></FormalSpec>
+<Implementation><![CDATA[
+	set type = ..GetPropertyType(class, property)
+	set classType = $$$getClassType(type)
+	
+	if (classType = $$$cCLASSCLASSTYPEPERSISTENT) || (classType = $$$cCLASSCLASSTYPESERIAL) {	
+		set:'$lf(dependencies, type) dependencies = dependencies _ $lb(type)
+	}
+]]></Implementation>
+</Method>
+
+<Method name="OutputProperty">
+<Description>
+Do we need to output this property?</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class:%Dictionary.CacheClassname,property:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set internal = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPinternal)
+	quit (internal = $$$NO)
+]]></Implementation>
+</Method>
+
+<Method name="GenerateProperty">
+<Description>
+Generate swagger spec for one property</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class:%Dictionary.CacheClassname,property:%String,definition:%Stream.Object</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+	/* docs https://swagger.io/docs/specification/data-models/data-types/
+	   primitives: integer number string boolean
+	   collection: array object
+	  
+	  examples:
+	  
+	  id:
+        type: integer
+      category:
+        $ref: "#/definitions/Category"
+      numbers:
+        type: object
+      tags:
+        type: array
+        items:
+         type: string 
+        */
+       
+	do ..Writeline(definition, 4, property _ ":")
+	
+	set collection = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPcollection) // "", "array", "list"
+	set type = ..GetPropertyType(class, property)
+	set swaggerType = ..TypeToSwagger(type)
+	
+	if swaggerType [ ..#SwaggerRefBase {
+		set swaggerTypeLine = "$ref: """ _ swaggerType _ """"		
+	} else {
+		set swaggerTypeLine = "type: """ _ swaggerType _ """"
+	}
+	
+	if collection = "" {
+		do ..Writeline(definition, 6, swaggerTypeLine)
+	} elseif collection = "array" {
+		// Free-form object
+		do ..Writeline(definition, 6, "type: ""object""")
+	} elseif collection = "list" {
+		do ..Writeline(definition, 6, "type: ""array""")
+		do ..Writeline(definition, 6, "items:")
+		do ..Writeline(definition, 8, swaggerTypeLine)
+	} else {
+		set sc = $$$ERROR($$$GeneralError, $$$FormatText("Unknown collection state: '%1' for property '%2' in class '%3'", collection, property, class))
+	}
+	
+	
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="GenerateInitial">
+<Description>
+Generate initial Swagger spec for a class</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class:%Dictionary.CacheClassname,definition:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	do ..Writeline(definition, 0, class _ ":")
+	do ..Writeline(definition, 2, "type: ""object""")
+	do ..Writeline(definition, 2, "properties:")
+]]></Implementation>
+</Method>
+
+<Method name="Writeline">
+<Description>
+Print new line and indent arg chars</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>definition:%Stream.Object,indent:%Integer(MINLEN=0),value:%String</FormalSpec>
+<Implementation><![CDATA[definition.WriteLine($j("", ..#StartIndent + indent) _ value)
+]]></Implementation>
+</Method>
+
+<Method name="GetPropertyType">
+<Description>
+Get property Type</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>class:%Dictionary.CacheClassname="",property:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set type = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPtype)
+	set:type="" type = "%Library.String"
+	quit type
+]]></Implementation>
+</Method>
+
+<Method name="TypeToSwagger">
+<Description>
+Get swagger property type from property type</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>type:%Dictionary.CacheClassname=""</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set swagger = ""
+	set classType = $$$getClassType(type)
+	
+	if classType = $$$cCLASSCLASSTYPEDATATYPE {	
+		if type = "%Library.Boolean" {
+			set swagger = "boolean"
+		} elseif $lf($lb("%Library.Integer", "%Library.BigInt", "%Library.SmallInt", "%Library.TinyInt"), type) {
+			set swagger = "integer"
+		} elseif $lf($lb("%Library.Decimal", "%Library.Double", "%Library.Float", "%Library.Currency", "%Library.Numeric"), type) {
+			set swagger = "number"
+		} else {
+			set swagger = "string"
+		}
+	} elseif ((classType = $$$cCLASSCLASSTYPEPERSISTENT) || (classType = $$$cCLASSCLASSTYPESERIAL)) {
+		set swagger = ..TypeToSwaggerReference(type)
+	} elseif classType =$$$cCLASSCLASSTYPESTREAM {
+		set swagger = "string"
+	} else {
+		// $$$cCLASSCLASSTYPEVIEW and $$$cCLASSCLASSTYPESYSTEM
+		// we shouldn't be here	
+	}
+	
+	quit swagger
+]]></Implementation>
+</Method>
+
+<Method name="TypeToSwaggerReference">
+<Description>
+Convert InterSystems property type into Swagger reference</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>type:%Dictionary.CacheClassname=""</FormalSpec>
+<Implementation><![CDATA[..#SwaggerRefBase _ type
+]]></Implementation>
+</Method>
+
+<Method name="GetPropertyParam">
+<Description>
+Get property param
+w ##class(Utils.YAML).GetPropertyParam("Form.Test.Simple", "text", "MINVAL")</Description>
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>class:%Dictionary.CacheClassname="",property:%String="",param=""</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[$$$comMemberArrayGet(class, $$$cCLASSproperty, property, $$$cPROPparameter, param)
+]]></Implementation>
+</Method>
+</Class>
+</Export>

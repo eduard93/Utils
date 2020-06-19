@@ -56,4 +56,5 @@ Utils.Temp.cls
 Utils.Time.cls
 Utils.XLS.cls
 Utils.XLSX.cls
+Utils.YAML.cls
 Utils.inc
