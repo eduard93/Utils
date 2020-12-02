@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Utils.ClassSize">
+<Description>
+Report how much data is stored per class
+Accepts 2 arguments:
+  - package: where to search for persistent classes
+  - fast: report only allocated, skip used</Description>
+<IncludeCode>%BigData.ShardingManager</IncludeCode>
+<Super>%SQL.CustomQuery</Super>
+<TimeCreated>65715,59238.779634</TimeCreated>
+
+<Parameter name="SQLNAME">
+<Type>String</Type>
+<Default>ClassSize</Default>
+</Parameter>
+
+<Property name="Class">
+<Description>
+InterSystems IRIS Class</Description>
+<Type>%Dictionary.Classname</Type>
+</Property>
+
+<Property name="Sharded">
+<Description>
+Is the class sharded?
+In the case of a sharded class, remember:
+1. Allocated/Used/Directory refer only to the current shard
+2. IRIS.Shard package class is used</Description>
+<Type>%Boolean</Type>
+</Property>
+
+<Property name="Type">
+<Description>
+What does the global stores for a class</Description>
+<Type>%String</Type>
+<Parameter name="VALUELIST" value="data,stream,index"/>
+</Property>
+
+<Property name="SubType">
+<Description>
+In a case of Type=index - what index.
+If Type=index and SubType is empty - common global for all indices </Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="Global">
+<Description>
+GLVN</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="32"/>
+</Property>
+
+<Property name="Allocated">
+<Description>
+Total size, in MB, of blocks allocated for the global.</Description>
+<Type>%Integer</Type>
+</Property>
+
+<Property name="Used">
+<Description>
+Total used data, in MB, for the global.</Description>
+<Type>%Integer</Type>
+</Property>
+
+<Property name="Directory">
+<Description>
+Effective directory for the global</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="1000"/>
+</Property>
+
+<Property name="%Data">
+<Description>
+Internal storage for query results</Description>
+<Type>%List</Type>
+<MultiDimensional>1</MultiDimensional>
+<Private>1</Private>
+</Property>
+
+<Property name="%Row">
+<Description>
+Current row</Description>
+<Type>%Integer</Type>
+<InitialExpression>0</InitialExpression>
+<Private>1</Private>
+</Property>
+
+<Method name="%OpenCursor">
+<FormalSpec>package:%String,fast:%Boolean=$$$YES</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+
+	set rs = ..StoragesFunc(package)
+	while rs.%Next() {
+		set class = rs.parent
+		set storage = rs.name
+		
+		set sharded = $$$defClassKeyGet(class,$$$cCLASSsharded)
+
+		set:sharded class = $$$SSShardLocalPackage _ "." _ class
+		
+		set sc = ..GetStorageGlobals(class, storage, fast)
+		quit:$$$ISERR(sc)
+	}
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="GetStorageGlobals">
+<Description>
+Main method, based on class and storage populates %Data
+class - FQCN
+storage - name of the storage
+fast - return only allocated, used is not calculated.</Description>
+<FormalSpec>class:%Dictionary.Classname,storage:%String,fast:%Boolean</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim sc As %Status = $$$OK
+	set sharded = ($e(class, 1, $l($$$SSShardLocalPackage)) = $$$SSShardLocalPackage) 
+	set displayClass = $case(sharded, $$$YES:$replace(class, $$$SSShardLocalPackage _ ".", ""), $$$NO:class)
+	
+	// First we process 3 main globals
+	set data = $$$defMemberKeyGet(class,$$$cCLASSstorage,storage,$$$cSDEFdatalocation)
+	set indexAll = $$$defMemberKeyGet(class,$$$cCLASSstorage,storage,$$$cSDEFindexlocation)
+	set stream = $$$defMemberKeyGet(class,$$$cCLASSstorage,storage,$$$cSDEFstreamlocation)
+	
+	for globalList = $lb(data, "data"),	$lb(indexAll, "index"), $lb(stream, "stream") {
+		set global = $lg(globalList)
+		set globalType = $lg(globalList, 2)
+		set sc = ..GetGlobalInfo(global, fast, .directory, .allocated, .used)
+		return:$$$ISERR(sc) sc
+		set ..%Data($i(..%Data)) = $lb(displayClass, sharded, globalType, "", global, allocated, used, directory)
+	}
+	
+	// Process individual globals (for indices)
+	set indexName = $$$defStorageSubMemberNext(class,$$$cCLASSstorage,storage,$$$cSDEFindex,"")
+	while indexName'="" {
+		if indexName '= "IDKEY" {
+			set index = $$$defStorageSubMemberKeyGet(class,$$$cCLASSstorage,storage,$$$cSDEFindex,indexName,$$$cSDEFIDXlocation)
+			set sc = ..GetGlobalInfo(index, fast, .directory, .allocated, .used)
+			return:$$$ISERR(sc) sc
+			set ..%Data($i(..%Data)) = $lb(displayClass, sharded, "index", indexName, index, allocated, used, directory)
+		}	
+		set indexName = $$$defStorageSubMemberNext(class,$$$cCLASSstorage,storage,$$$cSDEFindex,indexName)
+	}
+		
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="GetGlobalInfo">
+<Description>
+Get all required global information
+global - global to search for in current namespace
+fast - return only allocated, used is not calculated.
+directory - effective directory for the global
+allocated - total size, in MB, of blocks allocated for the global.
+used - total used space, in MB, for the global.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>global:%String,fast:%Boolean,*directory:%String,*allocated:%Integer,*used:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	kill directory, allocated, used
+	#dim sc As %Status = $$$OK
+	set dest = ##class(%SYS.Namespace).GetGlobalDest(,global)
+	// set system = $p(dest, "^", 1)
+	set directory = $p(dest, "^", 2)
+		
+	if global="" {
+		set used = -1
+		set allocated = -1
+	} elseif $d(@global)=0 {
+		set used = $case(fast, $$$YES:"", $$$NO:0)
+		set allocated = 0
+	} else {
+		set sc = ##Class(%GlobalEdit).GetGlobalSize(directory, global, .allocated, .used, fast)
+		set used = $case(fast, $$$YES:"", $$$NO: $fnumber(used, "", 0))
+		set allocated = $fnumber(allocated, "", 0)
+	}
+	quit sc
+]]></Implementation>
+</Method>
+
+<Method name="%FetchCursor">
+<Description>
+Get next row</Description>
+<FormalSpec><![CDATA[&sc:%Status=$$$OK]]></FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	quit:(..%Row = ..%Data) 0
+	set $lb(i%Class, i%Sharded, i%Type, i%SubType, i%Global, i%Allocated, i%Used, i%Directory) = ..%Data($i(i%%Row))
+	quit 1
+]]></Implementation>
+</Method>
+
+<Method name="%CloseCursor">
+<Description>
+Clean up</Description>
+<PlaceAfter>%Next</PlaceAfter>
+<Private>1</Private>
+<Implementation><![CDATA[
+	set ..%Row = ""
+	kill ..%Data
+]]></Implementation>
+</Method>
+
+<Query name="Storages">
+<Type>%SQLQuery</Type>
+<FormalSpec>package:%String</FormalSpec>
+<SqlQuery>SELECT 
+parent, name
+FROM %Dictionary.StorageDefinition
+WHERE parent IN (SELECT Name
+				 FROM %Dictionary.ClassDefinition_SubclassOf('%Persistent')
+				 WHERE Name %STARTSWITH :package)</SqlQuery>
+</Query>
+</Class>
+</Export>

@@ -4,6 +4,7 @@ Utils.AsyncREST.cls
 Utils.B.cls
 Utils.Browser.cls
 Utils.CallArgs.cls
+Utils.ClassSize.cls
 Utils.Compararator.cls
 Utils.CompararatorItem.cls
 Utils.Copyable.cls
