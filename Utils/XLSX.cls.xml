@@ -14,6 +14,15 @@ w ##class(Utils.XLSX).generateFileFromSQL(,"SELECT * FROM Sample.Person")</Descr
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	#dim sc As %Status = $$$OK
+		
+	if ##class(%Dictionary.CompiledClass).%ExistsId("isc.SetEnv") {
+		set env = "EXCELMEMSIZE"
+		set sc = ##class(isc.SetEnv).Setup()
+		quit:$$$ISERR(sc) sc
+		set sc = ##class(isc.SetEnv).SetEnvVar(env, "2048m")
+		quit:$$$ISERR(sc) sc
+		set val = $system.Util.GetEnviron(env)
+	}	
 	
 	set xmlfile = ##class(%File).TempFilename("xml")
 	set sc = ..generateXMLFromSQL(xmlfile, sql, args...)
@@ -72,7 +81,8 @@ Outputs XML to be fed into %SYS.ZENReportExcelExporter Excel-compliant stream fr
 		for i=1:1:columnCount {
 			set data = result.%GetData(i)
 			set:$lv(data) data = $lts(data)
-			do stream.WriteLine(class(i) _ data _ "</item>")
+			set data = $zstrip(data, "*C")
+			do stream.WriteLine(class(i) _ $zcvt(data, "O", "XML") _ "</item>")
 		}
 		do stream.WriteLine("</Row>")
 	}
