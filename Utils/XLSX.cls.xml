@@ -14,7 +14,8 @@ w ##class(Utils.XLSX).generateFileFromSQL(,"SELECT * FROM Sample.Person")</Descr
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	#dim sc As %Status = $$$OK
-		
+	
+	// Get SetEnv here: https://github.com/intersystems-ru/SetEnv
 	if ##class(%Dictionary.CompiledClass).%ExistsId("isc.SetEnv") {
 		set env = "EXCELMEMSIZE"
 		set sc = ##class(isc.SetEnv).Setup()
