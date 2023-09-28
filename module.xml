@@ -3,7 +3,7 @@
   <Document name="utils-code-snippets.ZPM">
     <Module>
       <Name>utils-code-snippets</Name>
-      <Version>1.0.0</Version>
+      <Version>1.0.1</Version>
       <Description>Utils Various code snippets for InterSystems IRIS</Description>
       <Packaging>module</Packaging>
 	  <Keywords>Utils Various code snippets</Keywords>
